@@ -14,7 +14,7 @@ public class SudokuGame extends ApplicationAdapter {
     private SudokuBoard board;
 
     // Константы масштабирования
-    public static final float WORLD_SCALE = 50f; // Увеличиваем масштаб для лучшего отображения
+    public static final float WORLD_SCALE = 50f;
     public static final float WORLD_WIDTH = 13 * WORLD_SCALE;
     public static final float WORLD_HEIGHT = 13 * WORLD_SCALE;
     public static final float BOARD_OFFSET_X = 2f * WORLD_SCALE;
@@ -47,7 +47,7 @@ public class SudokuGame extends ApplicationAdapter {
         board.render(batch, Assets.font);
         batch.end();
 
-        board.handleInput(); // Обработка ввода после отрисовки
+        board.handleInput();
     }
 
     @Override

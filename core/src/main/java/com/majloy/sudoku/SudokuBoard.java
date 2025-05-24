@@ -16,25 +16,24 @@ public class SudokuBoard {
     private int selectedRow = -1, selectedCol = -1;
 
     private static final int GRID_SIZE = 9;
-    private static final float LINE_THICKNESS = 2f; // В пикселях
+    private static final float LINE_THICKNESS = 2f;
 
     public SudokuBoard(OrthographicCamera camera, float boardX, float boardY, float worldScale) {
         this.camera = camera;
         this.boardX = boardX;
         this.boardY = boardY;
-        this.cellSize = worldScale; // 1 единица = worldScale пикселей
+        this.cellSize = worldScale;
         this.grid = new int[GRID_SIZE][GRID_SIZE];
         generatePuzzle();
     }
 
     private void generatePuzzle() {
-        // Заполняем сетку по правилам Sudoku
         for (int i = 0; i < GRID_SIZE; i++) {
             for (int j = 0; j < GRID_SIZE; j++) {
                 grid[i][j] = (i * 3 + i / 3 + j) % GRID_SIZE + 1;
             }
         }
-        removeNumbers(40); // Удаляем 40 чисел для создания головоломки
+        removeNumbers(40);
     }
 
     private void removeNumbers(int count) {
