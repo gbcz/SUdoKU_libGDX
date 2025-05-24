@@ -38,7 +38,7 @@ public class MainMenuScreen implements Screen {
         mainTable.setFillParent(true);
         mainTable.center();
 
-        Label.LabelStyle titleStyle = new Label.LabelStyle(titleFont, Color.WHITE);
+        Label.LabelStyle titleStyle = new Label.LabelStyle(titleFont, Color.GOLDENROD);
         Label title = new Label("SUDOKU", titleStyle);
         title.setAlignment(Align.center);
 
@@ -70,7 +70,7 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
+        Gdx.gl.glClearColor(0.9f, 0.9f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         stage.act(delta);
