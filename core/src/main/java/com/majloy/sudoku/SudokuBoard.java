@@ -17,6 +17,7 @@ public class SudokuBoard {
 
     private static final int GRID_SIZE = 9;
     private static final float LINE_THICKNESS = 2f;
+    private static final float BLOCK_LINE_THICKNESS = 4f;
 
     public SudokuBoard(OrthographicCamera camera, float boardX, float boardY, float worldScale) {
         this.camera = camera;
@@ -52,9 +53,8 @@ public class SudokuBoard {
         // Рисуем фон доски
         batch.setColor(Color.WHITE);
         batch.draw(Assets.whitePixel, boardX, boardY, GRID_SIZE * cellSize, GRID_SIZE * cellSize);
-
         // Рисуем сетку
-        batch.setColor(Color.BLACK);
+        batch.setColor(Assets.LINE_COLOR);
         for (int i = 0; i <= GRID_SIZE; i++) {
             // Горизонтальные линии
             batch.draw(Assets.whitePixel,
@@ -70,7 +70,23 @@ public class SudokuBoard {
                 LINE_THICKNESS,
                 GRID_SIZE * cellSize);
         }
+        // Рисуем толстые линии блоков
+        batch.setColor(Assets.BLOCK_LINE_COLOR);
+        for (int i = 0; i <= 3; i++) {
+            // Горизонтальные линии
+            batch.draw(Assets.whitePixel,
+                boardX,
+                boardY + i * 3 * cellSize,
+                GRID_SIZE * cellSize,
+                BLOCK_LINE_THICKNESS);
 
+            // Вертикальные линии
+            batch.draw(Assets.whitePixel,
+                boardX + i * 3 * cellSize,
+                boardY,
+                BLOCK_LINE_THICKNESS,
+                GRID_SIZE * cellSize);
+        }
         // Отрисовка цифр
         font.setColor(Color.BLACK);
         for (int row = 0; row < GRID_SIZE; row++) {

@@ -9,19 +9,18 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 public class Assets {
     public static TextureRegion whitePixel;
     public static BitmapFont font;
+    public static Color LINE_COLOR = new Color(0.2f, 0.2f, 0.2f, 1);
+    public static Color BLOCK_LINE_COLOR = new Color(0.1f, 0.1f, 0.1f, 1f);
 
     public static void load() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
         pixmap.setColor(Color.WHITE);
         pixmap.fill();
-        Texture texture = new Texture(pixmap);
-        texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
-        whitePixel = new TextureRegion(texture);
+        whitePixel = new TextureRegion(new Texture(pixmap));
         pixmap.dispose();
 
         font = new BitmapFont();
         font.getData().setScale(1f);
-        font.setUseIntegerPositions(false);
     }
 
     public static void dispose() {
