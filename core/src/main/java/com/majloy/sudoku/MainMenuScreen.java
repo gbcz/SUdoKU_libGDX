@@ -43,6 +43,7 @@ public class MainMenuScreen implements Screen {
         title.setAlignment(Align.center);
 
         TextButton newGameButton = new TextButton("NEW GAME", skin);
+        TextButton settingsButton = new TextButton("SETTINGS", skin);
         TextButton exitButton = new TextButton("EXIT", skin);
 
         newGameButton.addListener(new ClickListener() {
@@ -51,6 +52,13 @@ public class MainMenuScreen implements Screen {
                 dispose();
                 GameScreen gameScreen = new GameScreen(game);
                 game.setScreen(gameScreen);
+            }
+        });
+
+        settingsButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                dispose();
             }
         });
 
@@ -63,7 +71,8 @@ public class MainMenuScreen implements Screen {
 
         mainTable.add(title).padBottom(50).row();
         mainTable.add(newGameButton).width(400).height(80).padBottom(20).row();
-        mainTable.add(exitButton).width(400).height(80).row();
+        mainTable.add(settingsButton).width(400).height(80).padBottom(40).row();
+        mainTable.add(exitButton).width(400).height(80).padBottom(60).row();
 
         stage.addActor(mainTable);
     }
