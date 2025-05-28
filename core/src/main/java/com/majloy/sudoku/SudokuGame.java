@@ -8,7 +8,7 @@ public class SudokuGame extends Game {
     public OrthographicCamera camera;
     public FitViewport viewport;
 
-    // Константы масштабирования
+    //Константы масштабирования
     public static final float WORLD_SCALE = 50f;
     public static final float WORLD_WIDTH = 13 * WORLD_SCALE;
     public static final float WORLD_HEIGHT = 13 * WORLD_SCALE;

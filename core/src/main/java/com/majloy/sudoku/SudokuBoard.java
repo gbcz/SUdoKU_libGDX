@@ -50,44 +50,44 @@ public class SudokuBoard {
     }
 
     public void render(SpriteBatch batch, BitmapFont font) {
-        // Рисуем фон доски
+        //Рисуем фон доски
         batch.setColor(Color.WHITE);
         batch.draw(Assets.whitePixel, boardX, boardY, GRID_SIZE * cellSize, GRID_SIZE * cellSize);
-        // Рисуем сетку
+        //Рисуем сетку
         batch.setColor(Assets.LINE_COLOR);
         for (int i = 0; i <= GRID_SIZE; i++) {
-            // Горизонтальные линии
+            //Горизонтальные линии
             batch.draw(Assets.whitePixel,
                 boardX,
                 boardY + i * cellSize,
                 GRID_SIZE * cellSize,
                 LINE_THICKNESS);
 
-            // Вертикальные линии
+            //Вертикальные линии
             batch.draw(Assets.whitePixel,
                 boardX + i * cellSize,
                 boardY,
                 LINE_THICKNESS,
                 GRID_SIZE * cellSize);
         }
-        // Рисуем толстые линии блоков
+        //Рисуем толстые линии блоков
         batch.setColor(Assets.BLOCK_LINE_COLOR);
         for (int i = 0; i <= 3; i++) {
-            // Горизонтальные линии
+            //Горизонтальные линии
             batch.draw(Assets.whitePixel,
                 boardX,
                 boardY + i * 3 * cellSize,
                 GRID_SIZE * cellSize,
                 BLOCK_LINE_THICKNESS);
 
-            // Вертикальные линии
+            //Вертикальные линии
             batch.draw(Assets.whitePixel,
                 boardX + i * 3 * cellSize,
                 boardY,
                 BLOCK_LINE_THICKNESS,
                 GRID_SIZE * cellSize);
         }
-        // Отрисовка цифр
+        //Отрисовка цифр
         font.setColor(Color.BLACK);
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
