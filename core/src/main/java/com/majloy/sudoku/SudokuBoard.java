@@ -73,7 +73,7 @@ public class SudokuBoard {
         }
         //Рисуем толстые линии блоков
         batch.setColor(Assets.BLOCK_LINE_COLOR);
-        for (int i = 0; i <= 3; i++) {
+        for (int i = 0; i <= gridSize / 3; i++) {
             //Горизонтальные линии
             batch.draw(Assets.whitePixel,
                 boardX,
@@ -123,7 +123,6 @@ public class SudokuBoard {
 
                 selectedCol = (int) ((touchPos.x - boardX) / cellSize);
                 selectedRow = (int) ((touchPos.y - boardY) / cellSize);
-                Gdx.app.log("Input", "Selected cell: " + selectedRow + "," + selectedCol);
             }
         }
     }
