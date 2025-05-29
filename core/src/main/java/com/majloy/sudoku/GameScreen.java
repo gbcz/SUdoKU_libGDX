@@ -2,13 +2,14 @@ package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class GameScreen implements Screen {
     private final SudokuGame game;
-    private SudokuBoard board;
-    private SpriteBatch batch;
+    private final SudokuBoard board;
+    private final SpriteBatch batch;
 
     public GameScreen(SudokuGame game, int gridSize, int cellsToRemove) {
         this.game = game;
@@ -17,9 +18,9 @@ public class GameScreen implements Screen {
             SudokuGame.BOARD_OFFSET_X,
             SudokuGame.BOARD_OFFSET_Y,
             SudokuGame.WORLD_SCALE,
-            gridSize);
+            gridSize,
+            cellsToRemove);
 
-        board.removeNumbers(cellsToRemove);
         game.camera.position.set(
             SudokuGame.WORLD_WIDTH / 2,
             SudokuGame.WORLD_HEIGHT / 2,
@@ -45,6 +46,21 @@ public class GameScreen implements Screen {
 
         batch.begin();
         board.render(batch, Assets.font);
+
+        if (board.selectedRow != -1 && board.selectedCol != -1) {
+            batch.setColor(1, 1, 0, 0.3f);
+            batch.draw(Assets.whitePixel,
+                board.boardX + board.selectedCol * board.cellSize,
+                board.boardY + board.selectedRow * board.cellSize,
+                board.cellSize, board.cellSize);
+        }
+        if (board.isSolved()) {
+            Assets.font.setColor(Color.GREEN);
+            Assets.font.getData().setScale(2f);
+            Assets.font.draw(batch, "ПОБЕДА!",
+                board.boardX + board.gridSize * board.cellSize / 2 - 50,
+                board.boardY + board.gridSize * board.cellSize + 30);
+        }
         batch.end();
 
         board.handleInput();

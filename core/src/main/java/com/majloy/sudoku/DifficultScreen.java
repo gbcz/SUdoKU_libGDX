@@ -52,54 +52,29 @@ public class DifficultScreen implements Screen {
             public void clicked(InputEvent event, float x, float y){
                 dispose();
                 int gridSize = DifficultyScreen.difficulty;
-                int cellsToRemove;
-
-                if (gridSize == 6) {
-                    cellsToRemove = 10;
-                } else if (gridSize == 9) {
-                    cellsToRemove = 30;
-                } else {
-                    cellsToRemove = 50;
-                }
-
+                int cellsToRemove = (int)(gridSize * gridSize * 0.4);
                 GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove);
                 game.setScreen(gameScreen);
             }
         });
+
         mediumButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y){
                 dispose();
                 int gridSize = DifficultyScreen.difficulty;
-                int cellsToRemove;
-
-                if (gridSize == 6) {
-                    cellsToRemove = 15;
-                } else if (gridSize == 9) {
-                    cellsToRemove = 35;
-                } else {
-                    cellsToRemove = 55;
-                }
-
+                int cellsToRemove = (int)(gridSize * gridSize * 0.6);
                 GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove);
                 game.setScreen(gameScreen);
             }
         });
+
         hardButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y){
                 dispose();
                 int gridSize = DifficultyScreen.difficulty;
-                int cellsToRemove;
-
-                if (gridSize == 6) {
-                    cellsToRemove = 20;
-                } else if (gridSize == 9) {
-                    cellsToRemove = 40;
-                } else {
-                    cellsToRemove = 60;
-                }
-
+                int cellsToRemove = (int)(gridSize * gridSize * 0.8);
                 GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove);
                 game.setScreen(gameScreen);
             }

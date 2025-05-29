@@ -6,48 +6,123 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
-import java.util.Random;
 
 public class SudokuBoard {
     private int[][] grid;
-    private final int gridSize;
-    private final float boardX, boardY;
-    private final float cellSize;
+    final int gridSize;
+    final float boardX;
+    final float boardY;
+    final float cellSize;
     private final OrthographicCamera camera;
-    private int selectedRow = -1, selectedCol = -1;
+    int selectedRow = -1;
+    int selectedCol = -1;
 
     private static final float LINE_THICKNESS = 2f;
     private static final float BLOCK_LINE_THICKNESS = 4f;
 
+    private int blockSize;
+
     public SudokuBoard(OrthographicCamera camera, float boardX, float boardY,
-                       float worldScale, int gridSize) {
+                       float worldScale, int gridSize, int cellsToRemove) {
         this.camera = camera;
         this.boardX = boardX;
         this.boardY = boardY;
         this.cellSize = worldScale;
         this.gridSize = gridSize;
-        this.grid = new int[gridSize][gridSize];
-        generatePuzzle();
+        this.blockSize = getBlockSize(gridSize);
+
+        int attempts = 0;
+        do {
+            this.grid = SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
+            attempts++;
+        } while (countEmptyCells() < cellsToRemove * 0.9 && attempts < 5);
     }
 
-    private void generatePuzzle() {
+    private int countEmptyCells() {
+        int count = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 0) count++;
+            }
+        }
+        return count;
+    }
+
+    private int getBlockSize(int gridSize) {
+        switch (gridSize) {
+            case 6:
+                return 2;
+            case 9:
+                return 3;
+            case 12:
+                return 3;
+            default:
+                throw new IllegalArgumentException("Unsupported grid size");
+        }
+    }
+
+    public boolean isValidMove(int row, int col, int num) {
         for (int i = 0; i < gridSize; i++) {
-            for (int j = 0; j < gridSize; j++) {
-                grid[i][j] = (i * 3 + i / 3 + j) % gridSize + 1;
+            if (grid[row][i] == num || grid[i][col] == num) {
+                return false;
             }
         }
+
+        if (gridSize == 12) {
+            int blockStartRow = row - row % 3;
+            int blockStartCol = col - col % 4;
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 4; j++) {
+                    if (grid[blockStartRow + i][blockStartCol + j] == num) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        else {
+            int blockSize = (int)Math.sqrt(gridSize);
+            int blockStartRow = row - row % blockSize;
+            int blockStartCol = col - col % blockSize;
+
+            for (int i = 0; i < blockSize; i++) {
+                for (int j = 0; j < blockSize; j++) {
+                    if (grid[blockStartRow + i][blockStartCol + j] == num) {
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
-    public void removeNumbers(int count) {
-        Random random = new Random();
-        while (count > 0) {
-            int row = random.nextInt(gridSize);
-            int col = random.nextInt(gridSize);
-            if (grid[row][col] != 0) {
-                grid[row][col] = 0;
-                count--;
+    private boolean isValidFor6x6(int row, int col, int num) {
+        int colorBlockRow = row / 2;
+        int colorBlockCol = col / 3;
+
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                int r = colorBlockRow * 2 + i;
+                int c = colorBlockCol * 3 + j;
+                if (grid[r][c] == num && !(r == row && c == col)) {
+                    return false;
+                }
             }
         }
+        return true;
+    }
+
+    public boolean isSolved() {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (grid[row][col] == 0 || !isValidMove(row, col, grid[row][col])) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public void render(SpriteBatch batch, BitmapFont font) {
@@ -123,6 +198,14 @@ public class SudokuBoard {
 
                 selectedCol = (int) ((touchPos.x - boardX) / cellSize);
                 selectedRow = (int) ((touchPos.y - boardY) / cellSize);
+            }
+        }
+    }
+
+    public void handleNumberInput(int number) {
+        if (selectedRow != -1 && selectedCol != -1 && grid[selectedRow][selectedCol] == 0) {
+            if (isValidMove(selectedRow, selectedCol, number)) {
+                grid[selectedRow][selectedCol] = number;
             }
         }
     }
