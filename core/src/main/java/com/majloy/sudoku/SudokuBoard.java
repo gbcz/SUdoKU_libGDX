@@ -9,39 +9,40 @@ import com.badlogic.gdx.math.Vector3;
 import java.util.Random;
 
 public class SudokuBoard {
-    private final int[][] grid;
+    private int[][] grid;
+    private final int gridSize;
     private final float boardX, boardY;
     private final float cellSize;
     private final OrthographicCamera camera;
     private int selectedRow = -1, selectedCol = -1;
 
-    private static final int GRID_SIZE = 9;
     private static final float LINE_THICKNESS = 2f;
     private static final float BLOCK_LINE_THICKNESS = 4f;
 
-    public SudokuBoard(OrthographicCamera camera, float boardX, float boardY, float worldScale) {
+    public SudokuBoard(OrthographicCamera camera, float boardX, float boardY,
+                       float worldScale, int gridSize) {
         this.camera = camera;
         this.boardX = boardX;
         this.boardY = boardY;
         this.cellSize = worldScale;
-        this.grid = new int[GRID_SIZE][GRID_SIZE];
+        this.gridSize = gridSize;
+        this.grid = new int[gridSize][gridSize];
         generatePuzzle();
     }
 
     private void generatePuzzle() {
-        for (int i = 0; i < GRID_SIZE; i++) {
-            for (int j = 0; j < GRID_SIZE; j++) {
-                grid[i][j] = (i * 3 + i / 3 + j) % GRID_SIZE + 1;
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                grid[i][j] = (i * 3 + i / 3 + j) % gridSize + 1;
             }
         }
-        removeNumbers(40);
     }
 
-    private void removeNumbers(int count) {
+    public void removeNumbers(int count) {
         Random random = new Random();
         while (count > 0) {
-            int row = random.nextInt(GRID_SIZE);
-            int col = random.nextInt(GRID_SIZE);
+            int row = random.nextInt(gridSize);
+            int col = random.nextInt(gridSize);
             if (grid[row][col] != 0) {
                 grid[row][col] = 0;
                 count--;
@@ -52,15 +53,15 @@ public class SudokuBoard {
     public void render(SpriteBatch batch, BitmapFont font) {
         //Рисуем фон доски
         batch.setColor(Color.WHITE);
-        batch.draw(Assets.whitePixel, boardX, boardY, GRID_SIZE * cellSize, GRID_SIZE * cellSize);
+        batch.draw(Assets.whitePixel, boardX, boardY, gridSize * cellSize, gridSize * cellSize);
         //Рисуем сетку
         batch.setColor(Assets.LINE_COLOR);
-        for (int i = 0; i <= GRID_SIZE; i++) {
+        for (int i = 0; i <= gridSize; i++) {
             //Горизонтальные линии
             batch.draw(Assets.whitePixel,
                 boardX,
                 boardY + i * cellSize,
-                GRID_SIZE * cellSize,
+                gridSize * cellSize,
                 LINE_THICKNESS);
 
             //Вертикальные линии
@@ -68,7 +69,7 @@ public class SudokuBoard {
                 boardX + i * cellSize,
                 boardY,
                 LINE_THICKNESS,
-                GRID_SIZE * cellSize);
+                gridSize * cellSize);
         }
         //Рисуем толстые линии блоков
         batch.setColor(Assets.BLOCK_LINE_COLOR);
@@ -77,7 +78,7 @@ public class SudokuBoard {
             batch.draw(Assets.whitePixel,
                 boardX,
                 boardY + i * 3 * cellSize,
-                GRID_SIZE * cellSize,
+                gridSize * cellSize,
                 BLOCK_LINE_THICKNESS);
 
             //Вертикальные линии
@@ -85,12 +86,12 @@ public class SudokuBoard {
                 boardX + i * 3 * cellSize,
                 boardY,
                 BLOCK_LINE_THICKNESS,
-                GRID_SIZE * cellSize);
+                gridSize * cellSize);
         }
         //Отрисовка цифр
         font.setColor(Color.BLACK);
-        for (int row = 0; row < GRID_SIZE; row++) {
-            for (int col = 0; col < GRID_SIZE; col++) {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
                 if (grid[row][col] != 0) {
                     drawCenteredText(batch, font,
                         String.valueOf(grid[row][col]),
@@ -117,8 +118,8 @@ public class SudokuBoard {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
 
-            if (touchPos.x >= boardX && touchPos.x < boardX + GRID_SIZE * cellSize &&
-                touchPos.y >= boardY && touchPos.y < boardY + GRID_SIZE * cellSize) {
+            if (touchPos.x >= boardX && touchPos.x < boardX + gridSize * cellSize &&
+                touchPos.y >= boardY && touchPos.y < boardY + gridSize * cellSize) {
 
                 selectedCol = (int) ((touchPos.x - boardX) / cellSize);
                 selectedRow = (int) ((touchPos.y - boardY) / cellSize);

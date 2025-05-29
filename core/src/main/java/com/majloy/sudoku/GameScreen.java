@@ -10,14 +10,16 @@ public class GameScreen implements Screen {
     private SudokuBoard board;
     private SpriteBatch batch;
 
-    public GameScreen(SudokuGame game) {
+    public GameScreen(SudokuGame game, int gridSize, int cellsToRemove) {
         this.game = game;
         this.batch = new SpriteBatch();
         this.board = new SudokuBoard(game.camera,
             SudokuGame.BOARD_OFFSET_X,
             SudokuGame.BOARD_OFFSET_Y,
-            SudokuGame.WORLD_SCALE);
+            SudokuGame.WORLD_SCALE,
+            gridSize);
 
+        board.removeNumbers(cellsToRemove);
         game.camera.position.set(
             SudokuGame.WORLD_WIDTH / 2,
             SudokuGame.WORLD_HEIGHT / 2,
