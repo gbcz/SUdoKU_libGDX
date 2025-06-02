@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class SettingScreen implements Screen {
@@ -27,28 +29,46 @@ public class SettingScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        final CheckBox soundCheckbox = new CheckBox(" Sound", game.skin);
+        Label title = new Label("Settings", game.skin, "title");
+        table.add(title).padBottom(50).row();
+
+        // Настройка звука
+        final CheckBox soundCheckbox = new CheckBox(" Sound Effects", game.skin);
         soundCheckbox.setChecked(prefs.getBoolean("soundEnabled", true));
+        table.add(soundCheckbox).padBottom(20).row();
 
-        final SelectBox<String> themeSelectBox = new SelectBox<>(game.skin);
-        themeSelectBox.setItems("Light", "Dark", "Blue");
-        themeSelectBox.setSelected(prefs.getString("theme", "Light"));
+        // Выбор темы
+        final SelectBox<String> themeSelect = new SelectBox<>(game.skin);
+        themeSelect.setItems("Classic", "Dark", "Colorful");
+        themeSelect.setSelected(prefs.getString("theme", "Classic"));
+        table.add(new Label("Theme:", game.skin)).padBottom(5).row();
+        table.add(themeSelect).width(300).padBottom(30).row();
 
-        TextButton backButton = new TextButton("Back", game.skin);
-        backButton.addListener(new ChangeListener() {
+        // Кнопки
+        TextButton applyBtn = new TextButton("Apply", game.skin);
+        TextButton backBtn = new TextButton("Back", game.skin);
+
+        applyBtn.addListener(new ClickListener() {
             @Override
-            public void changed(ChangeEvent event, com.badlogic.gdx.scenes.scene2d.Actor actor) {
-                saveSettings(soundCheckbox.isChecked(), themeSelectBox.getSelected());
+            public void clicked(InputEvent event, float x, float y) {
+                saveSettings(soundCheckbox.isChecked(), themeSelect.getSelected());
+                Dialog appliedDialog = new Dialog("Info", game.skin);
+                appliedDialog.text("Settings applied!");
+                appliedDialog.button("OK");
+                appliedDialog.show(stage);
+            }
+        });
+
+        backBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
                 game.setScreen(new MainMenuScreen(game));
                 dispose();
             }
         });
 
-        table.add(new Label("Settings", game.skin, "title")).padBottom(50).row();
-        table.add(soundCheckbox).padBottom(30).row();
-        table.add(new Label("Theme:", game.skin)).padBottom(10).row();
-        table.add(themeSelectBox).width(200).padBottom(40).row();
-        table.add(backButton).width(200).height(60);
+        table.add(applyBtn).width(200).height(50).padBottom(15).row();
+        table.add(backBtn).width(200).height(50);
 
         stage.addActor(table);
     }
@@ -57,6 +77,7 @@ public class SettingScreen implements Screen {
         prefs.putBoolean("soundEnabled", soundEnabled);
         prefs.putString("theme", theme);
         prefs.flush();
+        game.applySettings(); // Применяем настройки в игре
     }
 
     @Override

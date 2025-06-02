@@ -31,7 +31,7 @@ public class SudokuBoard {
     private int blockSize;
 
     public SudokuBoard(OrthographicCamera camera, float boardX, float boardY,
-                       float worldScale, int gridSize, int cellsToRemove) {
+                       float worldScale, int gridSize, int cellsToRemove, int[][] savedGrid) {
         this.camera = camera;
         this.cellSize = worldScale * 0.9f;
         this.gridSize = gridSize;
@@ -55,11 +55,23 @@ public class SudokuBoard {
         this.boardY = SudokuGame.WORLD_HEIGHT - SudokuGame.BOARD_OFFSET_Y - totalBoardHeight;
         this.numberSelectorY = boardY - cellSize * numberSelectorHeight;
 
-        this.grid = SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
+        if (savedGrid != null) {
+            this.grid = savedGrid;
+        } else {
+            this.grid = SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
+        }
     }
 
     public int getGridSize() {
         return gridSize;
+    }
+
+    public int[][] getGrid() {
+        return grid;
+    }
+
+    public void setGrid(int[][] grid) {
+        this.grid = grid;
     }
 
     public int getCellValue(int row, int col) {
@@ -79,8 +91,44 @@ public class SudokuBoard {
         grid[row][col] = value;
     }
 
+    public boolean hasSelectedCell() {
+        return selectedRow != -1 && selectedCol != -1;
+    }
+
+    public void setSelectedCellValue(int value) {
+        if (hasSelectedCell() && grid[selectedRow][selectedCol] == 0) {
+            if (isValidMove(selectedRow, selectedCol, value)) {
+                grid[selectedRow][selectedCol] = value;
+            }
+        }
+    }
+
+    public int[] findEmptyCell() {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (grid[row][col] == 0) {
+                    return new int[]{row, col};
+                }
+            }
+        }
+        return null;
+    }
+
     public int getSolutionForCell(int row, int col) {
+        // В реальной реализации здесь должен быть доступ к решению
+        // Для примера возвращаем 1
         return 1;
+    }
+
+    public int getCellsToRemove() {
+        // Возвращает количество удаленных клеток (для сохранения игры)
+        int count = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 0) count++;
+            }
+        }
+        return count;
     }
 
     private int countEmptyCells() {
@@ -158,60 +206,6 @@ public class SudokuBoard {
         return true;
     }
 
-    private void renderNumberSelector(SpriteBatch batch, BitmapFont font) {
-        float originalScale = font.getScaleX();
-        float fontScale = gridSize == 12 ? 0.6f : 0.8f;
-        font.getData().setScale(fontScale);
-
-        float numberCellWidth = (gridSize * cellSize) / gridSize;
-
-        batch.setColor(0.7f, 0.7f, 0.7f, 1);
-        batch.draw(Assets.whitePixel,
-            boardX - NUMBER_PANEL_BORDER,
-            numberSelectorY - NUMBER_PANEL_BORDER,
-            gridSize * cellSize + 2 * NUMBER_PANEL_BORDER,
-            cellSize * NUMBER_PANEL_HEIGHT + 2 * NUMBER_PANEL_BORDER);
-
-        batch.setColor(Assets.NUMBER_SELECTOR_BG);
-        batch.draw(Assets.whitePixel,
-            boardX,
-            numberSelectorY,
-            gridSize * cellSize,
-            cellSize * NUMBER_PANEL_HEIGHT);
-
-        batch.setColor(Assets.LINE_COLOR);
-        for (int i = 1; i < gridSize; i++) {
-            batch.draw(Assets.whitePixel,
-                boardX + i * numberCellWidth - 0.5f,
-                numberSelectorY,
-                1,
-                cellSize * NUMBER_PANEL_HEIGHT);
-        }
-
-        font.setColor(Color.BLACK);
-        for (int i = 0; i < availableNumbers.length; i++) {
-            if (availableNumbers[i] == selectedNumber) {
-                batch.setColor(Assets.SELECTED_NUMBER_COLOR);
-                batch.draw(Assets.whitePixel,
-                    boardX + i * numberCellWidth,
-                    numberSelectorY,
-                    numberCellWidth,
-                    cellSize * NUMBER_PANEL_HEIGHT);
-                batch.setColor(Assets.NUMBER_SELECTOR_BG);
-            }
-
-            String numText = String.valueOf(availableNumbers[i]);
-            float textWidth = font.getData().getGlyph(numText.charAt(0)).width * fontScale;
-            float textHeight = font.getCapHeight() * fontScale;
-
-            font.draw(batch, numText,
-                boardX + i * numberCellWidth + (numberCellWidth - textWidth) / 2,
-                numberSelectorY + (cellSize * NUMBER_PANEL_HEIGHT + textHeight) / 2 - 5);
-        }
-
-        font.getData().setScale(originalScale);
-    }
-
     public void render(SpriteBatch batch, BitmapFont font) {
         batch.setColor(Color.WHITE);
         batch.draw(Assets.whitePixel, boardX, boardY, gridSize * cellSize, gridSize * cellSize);
@@ -279,7 +273,6 @@ public class SudokuBoard {
                 }
             }
         }
-        renderNumberSelector(batch, font);
     }
 
     private void drawCenteredText(SpriteBatch batch, BitmapFont font,

@@ -1,5 +1,7 @@
 package com.majloy.sudoku;
 
+import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.table;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -15,14 +17,10 @@ public class MainMenuScreen implements Screen {
     private Stage stage;
     private Skin skin;
     private User currentUser;
+    private Label userInfoLabel;
 
     public MainMenuScreen(SudokuGame game) {
         this.game = game;
-    }
-
-    public void setCurrentUser(User user) {
-        this.currentUser = user;
-        updateUserInfo();
     }
 
     @Override
@@ -41,9 +39,14 @@ public class MainMenuScreen implements Screen {
         Label footer = new Label("© 2023 Sudoku Game", skin, "default");
         footer.setColor(Color.GRAY);
 
+        userInfoLabel = new Label(currentUser != null ?
+            "Welcome, " + currentUser.getUsername() + " (Level " + currentUser.getLevel() + ")" :
+            "Guest Mode", skin);
+
         mainTable.add(header).expandX().fillX().top().row();
         mainTable.add(menuButtons).expand().center().row();
         mainTable.add(footer).padBottom(20).row();
+        mainTable.add(userInfoLabel).padBottom(30).row();
 
         stage.addActor(mainTable);
     }
@@ -93,6 +96,7 @@ public class MainMenuScreen implements Screen {
 
         TextButton newGameBtn = new TextButton("New Game", skin, "menuButton");
         TextButton continueBtn = new TextButton("Continue", skin, "menuButton");
+        TextButton statisticsBtn = new TextButton("Statistics", skin, "menuButton");
         TextButton profileBtn = new TextButton("Profile", skin, "menuButton");
         TextButton settingsBtn = new TextButton("Settings", skin, "menuButton");
         TextButton exitBtn = new TextButton("Exit", skin, "menuButton");
@@ -107,20 +111,51 @@ public class MainMenuScreen implements Screen {
             }
         });
 
-        profileBtn.addListener(new ClickListener() {
+        continueBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                if (currentUser != null) {
-                    game.setScreen(new ProfileScreen(game, currentUser));
+                if (loadSavedGame()) {
+                    game.setScreen(new GameScreen(game,
+                        game.savedGame.gridSize,
+                        game.savedGame.cellsToRemove,
+                        currentUser,
+                        game.savedGame.grid));
+                    dispose();
                 } else {
-                    game.setScreen(new LoginScreen(game, MainMenuScreen.this));
+                    Dialog noSaveDialog = new Dialog("Info", skin);
+                    noSaveDialog.text("No saved game found!");
+                    noSaveDialog.button("OK");
+                    noSaveDialog.show(stage);
                 }
+            }
+        });
+
+        statisticsBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new StatisticsScreen(game, currentUser));
                 dispose();
+            }
+        });
+
+        settingsBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new SettingsScreen(game));
+                dispose();
+            }
+        });
+
+        exitBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                Gdx.app.exit();
             }
         });
 
         buttons.add(newGameBtn).row();
         buttons.add(continueBtn).row();
+        buttons.add(statisticsBtn).row();
         buttons.add(profileBtn).row();
         buttons.add(settingsBtn).row();
         buttons.add(exitBtn).row();
@@ -131,6 +166,17 @@ public class MainMenuScreen implements Screen {
     private void updateUserInfo() {
         if (stage != null) {
             show();
+        }
+    }
+
+    private boolean loadSavedGame() {
+        return game.savedGame != null;
+    }
+
+    public void setCurrentUser(User user) {
+        this.currentUser = user;
+        if (userInfoLabel != null) {
+            userInfoLabel.setText("Welcome, " + user.getUsername() + " (Level " + user.getLevel() + ")");
         }
     }
 
