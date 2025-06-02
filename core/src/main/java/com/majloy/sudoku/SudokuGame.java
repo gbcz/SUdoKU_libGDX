@@ -1,13 +1,17 @@
 package com.majloy.sudoku;
 
+import static com.majloy.sudoku.Assets.font;
+
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class SudokuGame extends Game {
+    private SpriteBatch batch;
     public OrthographicCamera camera;
     public FitViewport viewport;
     public FontManager fontManager;
@@ -29,99 +33,33 @@ public class SudokuGame extends Game {
 
     @Override
     public void create() {
-        try {
-            Assets.load();
-            camera = new OrthographicCamera();
-            viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-            camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
+        Assets.load();
+        batch = new SpriteBatch();
+        font = new BitmapFont();
+        skin = new Skin(Gdx.files.internal("uiskin.json"));
+        renderer = new SudokuRenderer(skin, font);
 
-            fontManager = new FontManager();
-
-            skin = new Skin(Gdx.files.internal("uiskin.json"));
-            dbHelper = new DatabaseHelper();
-            settingsManager = new SettingsManager();
-            socialManager = new SocialManager(dbHelper);
-            achievementSystem = new AchievementSystem();
-
-            loadSavedGame();
-            loadUser();
-
-            renderer = new SudokuRenderer(this);
-
-            setScreen(new MainMenuScreen(this));
-        } catch (Exception e) {
-            Gdx.app.error("SudokuGame", "Initialization failed", e);
-            throw new RuntimeException("Game initialization failed", e);
-        }
-    }
-
-    public void applySettings() {
-        boolean soundEnabled = settingsManager.isSoundEnabled();
-        String theme = settingsManager.getTheme();
-    }
-
-    private void loadSavedGame() {
-        Preferences prefs = Gdx.app.getPreferences("SudokuSave");
-        if (prefs.getBoolean("has_save", false)) {
-            int gridSize = prefs.getInteger("grid_size", 9);
-            int cellsToRemove = prefs.getInteger("cells_removed", 40);
-
-            int[][] grid = new int[gridSize][gridSize];
-
-            savedGame = new SavedGameState(gridSize, cellsToRemove, grid);
-        }
-    }
-
-    private void loadUser() {
-        Preferences prefs = Gdx.app.getPreferences("SudokuUser");
-        String username = prefs.getString("lastUser", null);
-        if (username != null) {
-            currentUser = dbHelper.loginUser(username, prefs.getString("lastUserPass", ""));
-        } else {
-            currentUser = new User(-1, "Guest", 1, 0);
-        }
-    }
-
-    public static class SavedGameState {
-        public int gridSize;
-        public int cellsToRemove;
-        public int[][] grid;
-
-        public SavedGameState(int gridSize, int cellsToRemove, int[][] grid) {
-            this.gridSize = gridSize;
-            this.cellsToRemove = cellsToRemove;
-            this.grid = grid;
-        }
+        setScreen(new MainMenuScreen(this));
     }
 
     @Override
     public void render() {
-        renderer.render(Gdx.graphics.getDeltaTime());
-        super.render();
-    }
 
-    @Override
-    public void resize(int width, int height) {
-        super.resize(width, height);
-        viewport.update(width, height);
     }
 
     @Override
     public void dispose() {
+        Assets.dispose();
+        batch.dispose();
+        font.dispose();
+        skin.dispose();
         renderer.dispose();
-        super.dispose();
-        try {
-            if (Assets.font != null) {
-                Assets.dispose();
-            }
-            if (fontManager != null) {
-                fontManager.dispose();
-            }
-            if (skin != null) {
-                skin.dispose();
-            }
-        } catch (Exception e) {
-            Gdx.app.error("SudokuGame", "Dispose failed", e);
-        }
+    }
+
+    public SudokuRenderer getRenderer() {
+        return renderer;
+    }
+
+    public void applySettings() {
     }
 }

@@ -18,14 +18,15 @@ public class StatisticsScreen implements Screen {
     public StatisticsScreen(SudokuGame game, User user) {
         this.game = game;
         this.user = user != null ? user : createGuestUser();
+        setupUI();
+        game.getRenderer().setCurrentScreen(this);
     }
 
     private User createGuestUser() {
         return new User(-1, "Guest", 1, 0);
     }
 
-    @Override
-    public void show() {
+    private void setupUI() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
@@ -63,31 +64,21 @@ public class StatisticsScreen implements Screen {
 
     @Override
     public void render(float delta) {
-
+        game.getRenderer().render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
-
-    }
-
-    @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
     public void dispose() {
-
+        stage.dispose();
     }
+
+    @Override public void show() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 }

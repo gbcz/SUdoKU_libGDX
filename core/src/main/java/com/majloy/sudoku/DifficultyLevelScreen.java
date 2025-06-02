@@ -3,10 +3,11 @@ package com.majloy.sudoku;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
@@ -17,10 +18,11 @@ public class DifficultyLevelScreen implements Screen {
 
     public DifficultyLevelScreen(SudokuGame game) {
         this.game = game;
+        setupUI();
+        game.getRenderer().setCurrentScreen(this);
     }
 
-    @Override
-    public void show() {
+    private void setupUI() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
@@ -66,7 +68,7 @@ public class DifficultyLevelScreen implements Screen {
                 prefs.remove("has_save");
                 prefs.flush();
 
-                GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove, game.currentUser);
+                GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove, game.currentUser, game.savedGame.grid);
                 game.setScreen(gameScreen);
                 dispose();
             }
@@ -76,10 +78,7 @@ public class DifficultyLevelScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.9f, 0.9f, 0.9f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
-        stage.draw();
+        game.getRenderer().render(delta);
     }
 
     @Override
@@ -88,22 +87,12 @@ public class DifficultyLevelScreen implements Screen {
     }
 
     @Override
-    public void pause() {
-
-    }
-
-    @Override
-    public void resume() {
-
-    }
-
-    @Override
-    public void hide() {
-
-    }
-
-    @Override
     public void dispose() {
         stage.dispose();
     }
+
+    @Override public void show() {}
+    @Override public void pause() {}
+    @Override public void resume() {}
+    @Override public void hide() {}
 }
