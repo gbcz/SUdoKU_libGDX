@@ -31,7 +31,6 @@ public class StatisticsScreen implements Screen {
         Label title = new Label("Statistics", game.skin, "title");
         table.add(title).padBottom(50).row();
 
-        // Статистика
         table.add(new Label("Games Played:", game.skin)).padBottom(10).row();
         table.add(new Label(String.valueOf(user.getGamesPlayed()), game.skin)).padBottom(20).row();
 
@@ -41,7 +40,6 @@ public class StatisticsScreen implements Screen {
         table.add(new Label("Current Level:", game.skin)).padBottom(10).row();
         table.add(new Label(String.valueOf(user.getLevel()), game.skin)).padBottom(20).row();
 
-        // Кнопка назад
         TextButton backBtn = new TextButton("Back", game.skin);
         backBtn.addListener(new ClickListener() {
             @Override

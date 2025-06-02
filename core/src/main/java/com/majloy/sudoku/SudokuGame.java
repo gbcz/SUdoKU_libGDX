@@ -44,22 +44,17 @@ public class SudokuGame extends Game {
     }
 
     public void applySettings() {
-        // Применяем настройки (звук, тему и т.д.)
         boolean soundEnabled = settingsManager.isSoundEnabled();
         String theme = settingsManager.getTheme();
-        // ... применение настроек ...
     }
 
     private void loadSavedGame() {
-        // Загрузка сохраненной игры из Preferences
         Preferences prefs = Gdx.app.getPreferences("SudokuSave");
         if (prefs.contains("saved")) {
-            // ... загрузка состояния ...
         }
     }
 
     private void loadUser() {
-        // Попытка загрузить последнего пользователя
         Preferences prefs = Gdx.app.getPreferences("SudokuUser");
         String username = prefs.getString("lastUser", null);
         if (username != null) {

@@ -121,7 +121,6 @@ public class SudokuBoard {
     }
 
     public int getCellsToRemove() {
-        // Возвращает количество удаленных клеток (для сохранения игры)
         int count = 0;
         for (int[] row : grid) {
             for (int cell : row) {

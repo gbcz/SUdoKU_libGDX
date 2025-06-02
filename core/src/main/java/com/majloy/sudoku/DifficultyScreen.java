@@ -98,6 +98,4 @@ public class DifficultyScreen implements Screen {
     public void dispose() {
         stage.dispose();
     }
-
-    // Остальные методы интерфейса Screen...
 }

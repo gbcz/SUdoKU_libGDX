@@ -29,9 +29,6 @@ public class SocialManager {
         private int difficulty;
         private Date created;
 
-        // Геттеры и сеттеры
-
-
         public void setId(int id) {
             this.id = id;
         }

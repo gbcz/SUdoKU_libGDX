@@ -69,10 +69,11 @@ public class GameScreen implements Screen {
 
         Table table = new Table();
         table.setFillParent(true);
-        table.top();
 
         //Верхняя панель с кнопками и информацией
         Table topPanel = new Table();
+
+        table.add(topPanel).center().padTop(20).row();
 
         //Кнопка меню
         TextButton menuBtn = new TextButton("Menu", game.skin);
@@ -173,14 +174,12 @@ public class GameScreen implements Screen {
     }
 
     private void saveAndExit() {
-        // Сохраняем текущую игру
         game.savedGame = new SudokuGame.SavedGameState(
             board.getGridSize(),
             board.getCellsToRemove(),
             board.getGrid()
         );
 
-        // Возвращаемся в главное меню
         game.setScreen(new MainMenuScreen(game));
         dispose();
     }
@@ -206,6 +205,7 @@ public class GameScreen implements Screen {
         board.render(batch, game.fontManager.getRegularFont());
         batch.end();
 
+        uiStage.act(delta);
         uiStage.draw();
 
         if (board.isSolved()) {

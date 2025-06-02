@@ -32,19 +32,19 @@ public class SettingScreen implements Screen {
         Label title = new Label("Settings", game.skin, "title");
         table.add(title).padBottom(50).row();
 
-        // Настройка звука
+        //Настройка звука
         final CheckBox soundCheckbox = new CheckBox(" Sound Effects", game.skin);
         soundCheckbox.setChecked(prefs.getBoolean("soundEnabled", true));
         table.add(soundCheckbox).padBottom(20).row();
 
-        // Выбор темы
+        //Выбор темы
         final SelectBox<String> themeSelect = new SelectBox<>(game.skin);
         themeSelect.setItems("Classic", "Dark", "Colorful");
         themeSelect.setSelected(prefs.getString("theme", "Classic"));
         table.add(new Label("Theme:", game.skin)).padBottom(5).row();
         table.add(themeSelect).width(300).padBottom(30).row();
 
-        // Кнопки
+        //Кнопки
         TextButton applyBtn = new TextButton("Apply", game.skin);
         TextButton backBtn = new TextButton("Back", game.skin);
 
@@ -77,7 +77,7 @@ public class SettingScreen implements Screen {
         prefs.putBoolean("soundEnabled", soundEnabled);
         prefs.putString("theme", theme);
         prefs.flush();
-        game.applySettings(); // Применяем настройки в игре
+        game.applySettings();
     }
 
     @Override
