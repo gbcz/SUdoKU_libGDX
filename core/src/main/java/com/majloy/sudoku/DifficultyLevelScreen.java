@@ -1,6 +1,7 @@
 package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -59,6 +60,12 @@ public class DifficultyLevelScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 int gridSize = DifficultyScreen.difficulty;
                 int cellsToRemove = (int)(gridSize * gridSize * difficultyFactor);
+
+                game.savedGame = null;
+                Preferences prefs = Gdx.app.getPreferences("SudokuSave");
+                prefs.remove("has_save");
+                prefs.flush();
+
                 GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove, game.currentUser);
                 game.setScreen(gameScreen);
                 dispose();

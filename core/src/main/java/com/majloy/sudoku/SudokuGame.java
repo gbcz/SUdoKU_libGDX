@@ -62,7 +62,13 @@ public class SudokuGame extends Game {
 
     private void loadSavedGame() {
         Preferences prefs = Gdx.app.getPreferences("SudokuSave");
-        if (prefs.contains("saved")) {
+        if (prefs.getBoolean("has_save", false)) {
+            int gridSize = prefs.getInteger("grid_size", 9);
+            int cellsToRemove = prefs.getInteger("cells_removed", 40);
+
+            int[][] grid = new int[gridSize][gridSize];
+
+            savedGame = new SavedGameState(gridSize, cellsToRemove, grid);
         }
     }
 

@@ -28,7 +28,6 @@ public class MainMenuScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-        skin = game.skin;
 
         skin = createCustomSkin();
 

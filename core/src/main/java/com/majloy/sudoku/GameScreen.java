@@ -2,6 +2,7 @@ package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -207,6 +208,12 @@ public class GameScreen implements Screen {
             board.getCellsToRemove(),
             board.getGrid()
         );
+
+        Preferences prefs = Gdx.app.getPreferences("SudokuSave");
+        prefs.putBoolean("has_save", true);
+        prefs.putInteger("grid_size", board.getGridSize());
+        prefs.putInteger("cells_removed", board.getCellsToRemove());
+        prefs.flush();
 
         game.setScreen(new MainMenuScreen(game));
         dispose();
