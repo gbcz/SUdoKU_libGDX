@@ -41,7 +41,6 @@ public class MainMenuScreen implements Screen {
         stage.dispose();
     }
 
-    // Остальные методы интерфейса Screen...
     @Override public void show() {}
     @Override public void pause() {}
     @Override public void resume() {}
