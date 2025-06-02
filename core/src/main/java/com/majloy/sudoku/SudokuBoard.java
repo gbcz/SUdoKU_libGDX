@@ -34,6 +34,17 @@ public class SudokuBoard {
     private int blockSize;
 
     private boolean multiplayer = false;
+    public float getX() { return boardX; }
+    public float getY() { return boardY; }
+    public float getSize() { return gridSize * cellSize; }
+    public float getCellSize() { return cellSize; }
+    public int getBlockSize() { return blockSize; }
+    public boolean isSelected(int row, int col) {
+        return selectedRow == row && selectedCol == col;
+    }
+    public int getValue(int row, int col) {
+        return grid[row][col];
+    }
 
     public boolean isMultiplayer() {
         return multiplayer;
@@ -164,6 +175,18 @@ public class SudokuBoard {
             default:
                 throw new IllegalArgumentException("Unsupported grid size");
         }
+    }
+
+    public int getOpponentProgress() {
+        return opponentProgress;
+    }
+
+    public String getOpponentName() {
+        return opponentName;
+    }
+
+    public void setOpponentName(String opponentName) {
+        this.opponentName = opponentName;
     }
 
     public boolean isValidMove(int row, int col, int num) {

@@ -17,7 +17,11 @@ public class StatisticsScreen implements Screen {
 
     public StatisticsScreen(SudokuGame game, User user) {
         this.game = game;
-        this.user = user;
+        this.user = user != null ? user : createGuestUser();
+    }
+
+    private User createGuestUser() {
+        return new User(-1, "Guest", 1, 0);
     }
 
     @Override
@@ -32,13 +36,16 @@ public class StatisticsScreen implements Screen {
         table.add(title).padBottom(50).row();
 
         table.add(new Label("Games Played:", game.skin)).padBottom(10).row();
-        table.add(new Label(String.valueOf(user.getGamesPlayed()), game.skin)).padBottom(20).row();
+        table.add(new Label(String.valueOf(user != null ? user.getGamesPlayed() : 0), game.skin))
+            .padBottom(20).row();
 
         table.add(new Label("Games Won:", game.skin)).padBottom(10).row();
-        table.add(new Label(String.valueOf(user.getGamesWon()), game.skin)).padBottom(20).row();
+        table.add(new Label(String.valueOf(user != null ? user.getGamesWon() : 0), game.skin))
+            .padBottom(20).row();
 
         table.add(new Label("Current Level:", game.skin)).padBottom(10).row();
-        table.add(new Label(String.valueOf(user.getLevel()), game.skin)).padBottom(20).row();
+        table.add(new Label(String.valueOf(user != null ? user.getLevel() : 1), game.skin))
+            .padBottom(20).row();
 
         TextButton backBtn = new TextButton("Back", game.skin);
         backBtn.addListener(new ClickListener() {

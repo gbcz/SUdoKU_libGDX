@@ -3,7 +3,6 @@ package com.majloy.sudoku;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -23,6 +22,35 @@ public class GameScreen implements Screen {
     private float playTime = 0;
     private Label timeLabel;
     private Label hintsLabel;
+    public String getFormattedTime() {
+        int minutes = (int)(playTime / 60);
+        int seconds = (int)(playTime % 60);
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    public boolean isMultiplayer() {
+        return board != null && board.isMultiplayer();
+    }
+
+    public String getOpponentName() {
+        return board != null ? board.getOpponentName() : "";
+    }
+
+    public int getOpponentProgress() {
+        return board != null ? board.getOpponentProgress() : 0;
+    }
+
+    public SudokuBoard getBoard() {
+        return board;
+    }
+
+    public int getHintsLeft() {
+        return hintsLeft;
+    }
+
+    public void setHintsLeft(int hintsLeft) {
+        this.hintsLeft = hintsLeft;
+    }
 
     public GameScreen(SudokuGame game, int gridSize, int cellsToRemove, User user) {
         this(game, gridSize, cellsToRemove, user, null); // Передаем null для savedGrid

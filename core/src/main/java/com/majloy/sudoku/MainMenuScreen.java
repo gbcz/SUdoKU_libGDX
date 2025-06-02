@@ -20,6 +20,9 @@ public class MainMenuScreen implements Screen {
     public MainMenuScreen(SudokuGame game) {
         this.game = game;
     }
+    public User getCurrentUser() {
+        return this.currentUser;
+    }
 
     @Override
     public void show() {

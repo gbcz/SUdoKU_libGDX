@@ -16,8 +16,9 @@ public class SudokuGame extends Game {
     public SettingsManager settingsManager;
     public SocialManager socialManager;
     public SavedGameState savedGame;
-    public AchievementSystem achievementSystem;
     public User currentUser;
+    public AchievementSystem achievementSystem;
+    private SudokuRenderer renderer;
 
     //Константы масштабирования
     public static final float WORLD_SCALE = 50f;
@@ -34,14 +35,18 @@ public class SudokuGame extends Game {
             viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
             camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
 
-            achievementSystem = new AchievementSystem();
             fontManager = new FontManager();
+
             skin = new Skin(Gdx.files.internal("uiskin.json"));
             dbHelper = new DatabaseHelper();
             settingsManager = new SettingsManager();
+            socialManager = new SocialManager(dbHelper);
+            achievementSystem = new AchievementSystem();
 
             loadSavedGame();
             loadUser();
+
+            renderer = new SudokuRenderer(this);
 
             setScreen(new MainMenuScreen(this));
         } catch (Exception e) {
@@ -66,6 +71,8 @@ public class SudokuGame extends Game {
         String username = prefs.getString("lastUser", null);
         if (username != null) {
             currentUser = dbHelper.loginUser(username, prefs.getString("lastUserPass", ""));
+        } else {
+            currentUser = new User(-1, "Guest", 1, 0);
         }
     }
 
@@ -82,6 +89,12 @@ public class SudokuGame extends Game {
     }
 
     @Override
+    public void render() {
+        renderer.render(Gdx.graphics.getDeltaTime());
+        super.render();
+    }
+
+    @Override
     public void resize(int width, int height) {
         super.resize(width, height);
         viewport.update(width, height);
@@ -89,6 +102,7 @@ public class SudokuGame extends Game {
 
     @Override
     public void dispose() {
+        renderer.dispose();
         super.dispose();
         try {
             if (Assets.font != null) {
