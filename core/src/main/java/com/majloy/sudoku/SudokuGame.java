@@ -44,7 +44,7 @@ public class SudokuGame extends Game {
 
     @Override
     public void render() {
-
+        renderer.render(Gdx.graphics.getDeltaTime());
     }
 
     @Override

@@ -11,20 +11,18 @@ public class ThemeManager {
     private static final Map<String, Theme> themes = new HashMap<>();
 
     static {
-        // Классическая тема
         themes.put("classic", new Theme(
-            new Color(1, 1, 1, 1),    // background
-            new Color(0.2f, 0.2f, 0.2f, 1),   // lines
-            new Color(0.1f, 0.1f, 0.1f, 1),   // block lines
-            new Color(0, 0, 0, 1),    // numbers
-            new Color(0.9f, 0.9f, 0.2f, 0.7f), // selection
-            new Color(0.8f, 0.8f, 0.8f, 1),   // panel
-            new Color(0.2f, 0.4f, 0.8f, 1),   // multiplayer
-            new Color(0, 0, 0, 1),    // text
-            new Color(0.8f, 0.5f, 0.1f, 1)    // title
+            new Color(1, 1, 1, 1),
+            new Color(0.2f, 0.2f, 0.2f, 1),
+            new Color(0.1f, 0.1f, 0.1f, 1),
+            new Color(0, 0, 0, 1),
+            new Color(0.9f, 0.9f, 0.2f, 0.7f),
+            new Color(0.8f, 0.8f, 0.8f, 1),
+            new Color(0.2f, 0.4f, 0.8f, 1),
+            new Color(0, 0, 0, 1),
+            new Color(0.8f, 0.5f, 0.1f, 1)
         ));
 
-        // Темная тема
         themes.put("dark", new Theme(
             new Color(0.1f, 0.1f, 0.1f, 1),
             new Color(0.4f, 0.4f, 0.4f, 1),
