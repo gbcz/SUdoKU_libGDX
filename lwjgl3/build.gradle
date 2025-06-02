@@ -163,6 +163,13 @@ tasks.register('dist') {
   dependsOn 'jar'
 }
 
+task copyAssets(type: Copy) {
+  from '../core/assets'
+  into 'build/assets'
+}
+
+processResources.dependsOn copyAssets
+
 distributions {
   main {
     contents {

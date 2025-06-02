@@ -9,6 +9,10 @@ public class SudokuGenerator {
     private static final Random random = new Random();
 
     public static int[][] generateValidPuzzle(int gridSize, int cellsToRemove) {
+        if (gridSize != 6 && gridSize != 9 && gridSize != 12) {
+            throw new IllegalArgumentException("Unsupported grid size");
+        }
+
         int[][] grid = new int[gridSize][gridSize];
         int blockSize = getBlockSize(gridSize);
 
@@ -17,7 +21,9 @@ public class SudokuGenerator {
         }
 
         fillDiagonalBlocks(grid, blockSize);
-        solveSudoku(grid, blockSize);
+        if (!solveSudoku(grid, blockSize)) {
+            throw new IllegalStateException("Failed to generate valid Sudoku");
+        }
         removeNumbers(grid, cellsToRemove, blockSize);
 
         return grid;
