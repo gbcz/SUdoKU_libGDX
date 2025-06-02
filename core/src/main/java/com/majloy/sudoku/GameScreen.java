@@ -184,6 +184,35 @@ public class GameScreen implements Screen {
         dispose();
     }
 
+    private void showWinScreen() {
+        Dialog winDialog = new Dialog("Congratulations!", game.skin);
+        winDialog.text("You solved the puzzle!");
+
+        if (currentUser != null) {
+            currentUser.incrementGamesPlayed();
+            currentUser.incrementGamesWon();
+            currentUser.setLevel(currentUser.getLevel() + 1);
+            game.dbHelper.updateUserStats(currentUser);
+
+            // Проверка достижений
+            game.achievementSystem.checkAchievements(currentUser);
+
+            winDialog.text("\nLevel up! Now you're level " + currentUser.getLevel());
+
+            // Показ новых достижений
+            for (String achievementId : currentUser.getUnlockedAchievements()) {
+                AchievementSystem.Achievement achievement =
+                    AchievementSystem.ALL_ACHIEVEMENTS.get(achievementId);
+                if (achievement != null) {
+                    winDialog.text("\nAchievement unlocked: " + achievement.getName());
+                }
+            }
+        }
+
+        winDialog.button("OK", true);
+        winDialog.show(uiStage);
+    }
+
     @Override
     public void show() {
 
@@ -211,6 +240,10 @@ public class GameScreen implements Screen {
         if (board.isSolved()) {
             showWinScreen();
         }
+
+        if (board.isMultiplayer()) {
+            board.renderMultiplayerInfo(batch, game.fontManager.getSmallFont());
+        }
     }
 
 
@@ -225,21 +258,6 @@ public class GameScreen implements Screen {
         int minutes = (int)(seconds / 60);
         int secs = (int)(seconds % 60);
         return String.format("%02d:%02d", minutes, secs);
-    }
-
-    private void showWinScreen() {
-        Dialog winDialog = new Dialog("Congratulations!", game.skin);
-        winDialog.text("You solved the puzzle!");
-
-        if (currentUser != null) {
-            currentUser.incrementGamesPlayed();
-            currentUser.setLevel(currentUser.getLevel() + 1);
-            game.dbHelper.updateUserStats(currentUser);
-            winDialog.text("\nLevel up! Now you're level " + currentUser.getLevel());
-        }
-
-        winDialog.button("OK", true);
-        winDialog.show(uiStage);
     }
 
     @Override

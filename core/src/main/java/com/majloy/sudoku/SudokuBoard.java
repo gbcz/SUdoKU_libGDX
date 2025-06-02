@@ -14,6 +14,11 @@ public class SudokuBoard {
     final float boardY;
     float cellSize;
     private final OrthographicCamera camera;
+    private float selectionTimer = 0;
+    private boolean increasing = true;
+    private boolean isMultiplayer;
+    private String opponentName;
+    private int opponentProgress;
     int selectedRow = -1;
     int selectedCol = -1;
     private int[] availableNumbers;
@@ -21,14 +26,22 @@ public class SudokuBoard {
     private float numberSelectorY;
     private float numberSelectorHeight = 1.5f;
     private static final float SELECTION_ANIMATION_TIME = 0.5f;
-    private float selectionTimer = 0;
-    private boolean increasing = true;
     private static final float LINE_THICKNESS = 2f;
     private static final float BLOCK_LINE_THICKNESS = 4f;
     private static final float NUMBER_PANEL_BORDER = 3f;
     private static final float NUMBER_PANEL_HEIGHT = 1.8f;
 
     private int blockSize;
+
+    private boolean multiplayer = false;
+
+    public boolean isMultiplayer() {
+        return multiplayer;
+    }
+
+    public void setMultiplayer(boolean multiplayer) {
+        this.multiplayer = multiplayer;
+    }
 
     public SudokuBoard(OrthographicCamera camera, float boardX, float boardY,
                        float worldScale, int gridSize, int cellsToRemove, int[][] savedGrid) {
@@ -203,6 +216,24 @@ public class SudokuBoard {
             }
         }
         return true;
+    }
+
+    public void setMultiplayerMode(String opponentName) {
+        this.isMultiplayer = true;
+        this.opponentName = opponentName;
+        this.opponentProgress = 0;
+    }
+
+    public void updateOpponentProgress(int progress) {
+        this.opponentProgress = progress;
+    }
+
+    public void renderMultiplayerInfo(SpriteBatch batch, BitmapFont font) {
+        if (isMultiplayer) {
+            font.setColor(Color.BLUE);
+            font.draw(batch, "Opponent: " + opponentName + " (" + opponentProgress + "%)",
+                boardX, boardY - 30);
+        }
     }
 
     public void render(SpriteBatch batch, BitmapFont font) {

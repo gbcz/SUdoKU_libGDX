@@ -1,7 +1,5 @@
 package com.majloy.sudoku;
 
-import static com.badlogic.gdx.scenes.scene2d.ui.Table.Debug.table;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
@@ -27,10 +25,13 @@ public class MainMenuScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        skin = game.skin;
+
         skin = createCustomSkin();
 
         Table mainTable = new Table();
         mainTable.setFillParent(true);
+        mainTable.center();
 
         Table header = createHeader();
 

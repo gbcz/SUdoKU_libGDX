@@ -10,21 +10,27 @@ public class SocialManager {
     }
 
     public void sendChallenge(int fromUserId, int toUserId, int gridSize, int difficulty) {
-        //Сохраняем вызов в базе данных
+        Challenge challenge = new Challenge();
+        challenge.setFromUserId(fromUserId);
+        challenge.setGridSize(gridSize);
+        challenge.setDifficulty(difficulty);
+        challenge.setCreated(new Date());
+        // Сохраняем вызов в базе данных
+        dbHelper.saveChallenge(challenge);
     }
 
     public List<Challenge> getChallengesForUser(int userId) {
-        //Получаем список вызовов для пользователя
-        return new ArrayList<>();
+        return dbHelper.getChallengesForUser(userId);
     }
 
     public void shareResult(int userId, String socialNetwork, int score) {
-        //Логика публикации результата в соцсети
+        // Логика публикации результата в соцсети
     }
 
     public static class Challenge {
         private int id;
         private int fromUserId;
+        private int toUserId;
         private int gridSize;
         private int difficulty;
         private Date created;
@@ -35,6 +41,10 @@ public class SocialManager {
 
         public void setFromUserId(int fromUserId) {
             this.fromUserId = fromUserId;
+        }
+
+        public void setToUserId(int toUserId) {
+            this.toUserId = toUserId;
         }
 
         public void setGridSize(int gridSize) {
@@ -55,6 +65,10 @@ public class SocialManager {
 
         public int getFromUserId() {
             return fromUserId;
+        }
+
+        public int getToUserId() {
+            return toUserId;
         }
 
         public int getGridSize() {

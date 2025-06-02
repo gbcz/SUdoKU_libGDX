@@ -16,6 +16,7 @@ public class SudokuGame extends Game {
     public SettingsManager settingsManager;
     public SocialManager socialManager;
     public SavedGameState savedGame;
+    public AchievementSystem achievementSystem;
     public User currentUser;
 
     //Константы масштабирования
@@ -27,20 +28,26 @@ public class SudokuGame extends Game {
 
     @Override
     public void create() {
-        Assets.load();
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
-        camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
+        try {
+            Assets.load();
+            camera = new OrthographicCamera();
+            viewport = new FitViewport(WORLD_WIDTH, WORLD_HEIGHT, camera);
+            camera.position.set(WORLD_WIDTH/2, WORLD_HEIGHT/2, 0);
 
-        fontManager = new FontManager();
-        skin = new Skin(Gdx.files.internal("uiskin.json"));
-        dbHelper = new DatabaseHelper();
-        settingsManager = new SettingsManager();
+            achievementSystem = new AchievementSystem();
+            fontManager = new FontManager();
+            skin = new Skin(Gdx.files.internal("uiskin.json"));
+            dbHelper = new DatabaseHelper();
+            settingsManager = new SettingsManager();
 
-        loadSavedGame();
-        loadUser();
+            loadSavedGame();
+            loadUser();
 
-        setScreen(new MainMenuScreen(this));
+            setScreen(new MainMenuScreen(this));
+        } catch (Exception e) {
+            Gdx.app.error("SudokuGame", "Initialization failed", e);
+            throw new RuntimeException("Game initialization failed", e);
+        }
     }
 
     public void applySettings() {
@@ -83,8 +90,18 @@ public class SudokuGame extends Game {
     @Override
     public void dispose() {
         super.dispose();
-        Assets.dispose();
-        fontManager.dispose();
-        skin.dispose();
+        try {
+            if (Assets.font != null) {
+                Assets.dispose();
+            }
+            if (fontManager != null) {
+                fontManager.dispose();
+            }
+            if (skin != null) {
+                skin.dispose();
+            }
+        } catch (Exception e) {
+            Gdx.app.error("SudokuGame", "Dispose failed", e);
+        }
     }
 }

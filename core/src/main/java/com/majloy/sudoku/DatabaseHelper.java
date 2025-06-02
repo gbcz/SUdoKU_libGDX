@@ -6,6 +6,9 @@ import com.badlogic.gdx.Preferences;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class DatabaseHelper {
     private static final String PREFS_NAME = "sudoku_data";
@@ -93,5 +96,43 @@ public class DatabaseHelper {
     public void loadUserSettings(User user) {
         user.setTheme(prefs.getString("user_" + user.getUsername() + "_theme", "default"));
         user.setColorScheme(prefs.getString("user_" + user.getUsername() + "_colors", "classic"));
+    }
+
+    public void saveChallenge(SocialManager.Challenge challenge) {
+        Preferences prefs = Gdx.app.getPreferences("sudoku_challenges");
+        int nextId = prefs.getInteger("next_id", 1);
+
+        prefs.putInteger("challenge_" + nextId + "_from", challenge.getFromUserId());
+        prefs.putInteger("challenge_" + nextId + "_to", challenge.getToUserId());
+        prefs.putInteger("challenge_" + nextId + "_size", challenge.getGridSize());
+        prefs.putInteger("challenge_" + nextId + "_diff", challenge.getDifficulty());
+        prefs.putLong("challenge_" + nextId + "_created", challenge.getCreated().getTime());
+
+        prefs.putInteger("next_id", nextId + 1);
+        prefs.flush();
+    }
+
+    public List<SocialManager.Challenge> getChallengesForUser(int userId) {
+        Preferences prefs = Gdx.app.getPreferences("sudoku_challenges");
+        List<SocialManager.Challenge> challenges = new ArrayList<>();
+        int count = prefs.getInteger("next_id", 1);
+
+        for (int i = 1; i < count; i++) {
+            if (prefs.contains("challenge_" + i + "_to") &&
+                prefs.getInteger("challenge_" + i + "_to") == userId) {
+
+                SocialManager.Challenge challenge = new SocialManager.Challenge();
+                challenge.setId(i);
+                challenge.setFromUserId(prefs.getInteger("challenge_" + i + "_from"));
+                challenge.setToUserId(userId);
+                challenge.setGridSize(prefs.getInteger("challenge_" + i + "_size"));
+                challenge.setDifficulty(prefs.getInteger("challenge_" + i + "_diff"));
+                challenge.setCreated(new Date(prefs.getLong("challenge_" + i + "_created")));
+
+                challenges.add(challenge);
+            }
+        }
+
+        return challenges;
     }
 }

@@ -28,7 +28,7 @@ public class StatisticsScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        Label title = new Label("Statistics", game.skin, "title");
+        Label title = new Label("Statistics", game.skin, "default");
         table.add(title).padBottom(50).row();
 
         table.add(new Label("Games Played:", game.skin)).padBottom(10).row();

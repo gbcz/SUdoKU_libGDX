@@ -10,8 +10,10 @@ public class Assets {
     public static TextureRegion whitePixel;
     public static BitmapFont font;
     public static TextureRegion[] numberTiles;
+
     public static Color LINE_COLOR = new Color(0.2f, 0.2f, 0.2f, 1);
     public static Color BLOCK_LINE_COLOR = new Color(0.1f, 0.1f, 0.1f, 1f);
+    public static Color SELECTED_NUMBER_COLOR = new Color(0.9f, 0.9f, 0.2f, 0.7f);
 
     public static void load() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -24,20 +26,38 @@ public class Assets {
         font.getData().setScale(1f);
 
         numberTiles = new TextureRegion[10];
+
         for (int i = 0; i < 10; i++) {
             numberTiles[i] = createNumberTexture(i);
         }
     }
 
     private static TextureRegion createNumberTexture(int number) {
-        return null;
+        Pixmap pixmap = new Pixmap(32, 32, Pixmap.Format.RGBA8888);
+        pixmap.setColor(Color.WHITE);
+        pixmap.fill();
+        //Здесь должна быть логика рисования цифры
+        //Временно просто возвращаем белую текстуру
+        Texture texture = new Texture(pixmap);
+        pixmap.dispose();
+        return new TextureRegion(texture);
     }
 
     public static void dispose() {
-        whitePixel.getTexture().dispose();
-        font.dispose();
-        for (TextureRegion tile : numberTiles) {
-            tile.getTexture().dispose();
+        if (whitePixel != null && whitePixel.getTexture() != null) {
+            whitePixel.getTexture().dispose();
+        }
+
+        if (font != null) {
+            font.dispose();
+        }
+
+        if (numberTiles != null) {
+            for (TextureRegion tile : numberTiles) {
+                if (tile != null && tile.getTexture() != null) {
+                    tile.getTexture().dispose();
+                }
+            }
         }
     }
 }
