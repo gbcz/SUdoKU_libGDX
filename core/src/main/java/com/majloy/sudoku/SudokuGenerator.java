@@ -7,35 +7,61 @@ import java.util.ArrayList;
 
 public class SudokuGenerator {
     private static final Random random = new Random();
+    private static final int MAX_GENERATION_ATTEMPTS = 1000;
 
     public static int[][] generateValidPuzzle(int gridSize, int cellsToRemove) {
-        if (gridSize != 6 && gridSize != 9 && gridSize != 12) {
-            throw new IllegalArgumentException("Unsupported grid size");
+        validateGridSize(gridSize);
+        validateCellsToRemove(gridSize, cellsToRemove);
+
+        for (int attempt = 0; attempt < MAX_GENERATION_ATTEMPTS; attempt++) {
+            try {
+                int[][] grid = new int[gridSize][gridSize];
+                int blockSize = getBlockSize(gridSize);
+
+                if (gridSize == 16) {
+                    return generate12x12Puzzle(cellsToRemove);
+                }
+
+                fillDiagonalBlocks(grid, blockSize);
+                if (!solveSudoku(grid, blockSize)) {
+                    continue;
+                }
+
+                if (removeNumbersSafely(grid, cellsToRemove, blockSize)) {
+                    return grid;
+                }
+            } catch (Exception e) {
+            }
         }
+        throw new IllegalStateException("Failed to generate valid Sudoku after " +
+            MAX_GENERATION_ATTEMPTS + " attempts");
+    }
 
-        int[][] grid = new int[gridSize][gridSize];
-        int blockSize = getBlockSize(gridSize);
-
-        if (gridSize == 12) {
-            return generate12x12Puzzle(cellsToRemove);
+    private static void validateGridSize(int gridSize) {
+        if (gridSize != 4 && gridSize != 9 && gridSize != 16) {
+            throw new IllegalArgumentException("Unsupported grid size: " + gridSize);
         }
+    }
 
-        fillDiagonalBlocks(grid, blockSize);
-        if (!solveSudoku(grid, blockSize)) {
-            throw new IllegalStateException("Failed to generate valid Sudoku");
+    private static void validateCellsToRemove(int gridSize, int cellsToRemove) {
+        int totalCells = gridSize * gridSize;
+        int minEmptyCells = (int)(totalCells * 0.3);
+        int maxEmptyCells = (int)(totalCells * 0.7);
+
+        if (cellsToRemove < minEmptyCells || cellsToRemove > maxEmptyCells) {
+            throw new IllegalArgumentException(String.format(
+                "Invalid cellsToRemove: %d for grid %dx%d (should be between %d and %d)",
+                cellsToRemove, gridSize, gridSize, minEmptyCells, maxEmptyCells));
         }
-        removeNumbers(grid, cellsToRemove, blockSize);
-
-        return grid;
     }
 
     private static int[][] generate12x12Puzzle(int cellsToRemove) {
-        int[][] grid = new int[12][12];
-        int blockRows = 3;
+        int[][] grid = new int[16][16];
+        int blockRows = 4;
         int blockCols = 4;
 
         for (int boxRow = 0; boxRow < 4; boxRow++) {
-            for (int boxCol = 0; boxCol < 3; boxCol++) {
+            for (int boxCol = 0; boxCol < 4; boxCol++) {
                 fill12x12Block(grid, boxRow * blockRows, boxCol * blockCols);
             }
         }
@@ -47,17 +73,44 @@ public class SudokuGenerator {
 
     private static void fill12x12Block(int[][] grid, int startRow, int startCol) {
         List<Integer> numbers = new ArrayList<>();
-        for (int i = 1; i <= 12; i++) numbers.add(i);
+        for (int i = 1; i <= 16; i++) numbers.add(i);
         Collections.shuffle(numbers);
 
         int index = 0;
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 4; i++) {
             for (int j = 0; j < 4; j++) {
-                if (startRow + i < 12 && startCol + j < 12) {
+                if (startRow + i < 16 && startCol + j < 16) {
                     grid[startRow + i][startCol + j] = numbers.get(index++);
                 }
             }
         }
+    }
+
+    private static boolean removeNumbersSafely(int[][] grid, int cellsToRemove, int blockSize) {
+        int count = cellsToRemove;
+        int attempts = 0;
+        int maxAttempts = cellsToRemove * 3;
+        int[][] solution = copyGrid(grid);
+
+        while (count > 0 && attempts < maxAttempts) {
+            int row = random.nextInt(grid.length);
+            int col = random.nextInt(grid.length);
+
+            if (grid[row][col] != 0) {
+                int temp = grid[row][col];
+                grid[row][col] = 0;
+
+                int[][] tempGrid = copyGrid(grid);
+                if (countSolutions(tempGrid, blockSize) == 1) {
+                    count--;
+                } else {
+                    grid[row][col] = temp;
+                }
+            }
+            attempts++;
+        }
+
+        return count == 0;
     }
 
     private static void removeNumbersSimple(int[][] grid, int cellsToRemove) {
@@ -66,8 +119,8 @@ public class SudokuGenerator {
         int maxAttempts = cellsToRemove * 2;
 
         while (removed < cellsToRemove && maxAttempts-- > 0) {
-            int row = random.nextInt(12);
-            int col = random.nextInt(12);
+            int row = random.nextInt(16);
+            int col = random.nextInt(16);
 
             if (grid[row][col] != 0) {
                 grid[row][col] = 0;
@@ -78,12 +131,12 @@ public class SudokuGenerator {
 
     private static int getBlockSize(int gridSize) {
         switch (gridSize) {
-            case 6:
+            case 4:
                 return 2;
             case 9:
                 return 3;
-            case 12:
-                return 3;
+            case 16:
+                return 4;
             default:
                 throw new IllegalArgumentException("Unsupported grid size");
         }
@@ -155,21 +208,21 @@ public class SudokuGenerator {
             }
         }
 
-        if (grid.length == 6) {
-            return isValidFor6x6(grid, row, col, num);
+        if (grid.length == 4) {
+            return isValidFor4x4(grid, row, col, num);
         }
 
         return true;
     }
 
-    private static boolean isValidFor6x6(int[][] grid, int row, int col, int num) {
+    private static boolean isValidFor4x4(int[][] grid, int row, int col, int num) {
         int colorBlockRow = row / 2;
-        int colorBlockCol = col / 3;
+        int colorBlockCol = col / 2;
 
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 2; j++) {
                 int r = colorBlockRow * 2 + i;
-                int c = colorBlockCol * 3 + j;
+                int c = colorBlockCol * 2 + j;
                 if (grid[r][c] == num && !(r == row && c == col)) {
                     return false;
                 }

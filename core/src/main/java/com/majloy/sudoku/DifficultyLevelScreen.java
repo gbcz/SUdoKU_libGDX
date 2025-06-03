@@ -33,9 +33,9 @@ public class DifficultyLevelScreen implements Screen {
         Label title = new Label("Select Difficulty", game.skin, "default");
         title.setAlignment(Align.center);
 
-        TextButton easyButton = createDifficultyButton("Easy", 0.4f);
-        TextButton mediumButton = createDifficultyButton("Medium", 0.6f);
-        TextButton hardButton = createDifficultyButton("Hard", 0.8f);
+        TextButton easyButton = createDifficultyButton("Easy", 0.3f);
+        TextButton mediumButton = createDifficultyButton("Medium", 0.45f);
+        TextButton hardButton = createDifficultyButton("Hard", 0.6f);
         TextButton backButton = new TextButton("Back", game.skin);
 
         backButton.addListener(new ClickListener() {

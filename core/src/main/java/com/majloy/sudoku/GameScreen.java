@@ -31,23 +31,7 @@ public class GameScreen implements Screen {
 
     public GameScreen(SudokuGame game, int gridSize, int cellsToRemove, User user, int[][] grid) {
         this.game = game;
-        this.board = new SudokuBoard(game.camera, SudokuGame.BOARD_OFFSET_X,
-            SudokuGame.BOARD_OFFSET_Y, SudokuGame.WORLD_SCALE, gridSize, cellsToRemove, grid);
-
-        Table table = new Table();
-        table.setFillParent(true);
-        table.top().left();
-
-        timeLabel = new Label("00:00", game.skin);
-        table.add(timeLabel).pad(20).row();
-
-        TextButton menuBtn = new TextButton("Menu", game.skin);
-        menuBtn.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                showPauseMenu();
-            }
-        });
+        this.board = new SudokuBoard(game.camera, SudokuGame.WORLD_SCALE, gridSize, cellsToRemove, grid);
 
         setupUI();
         game.getRenderer().setCurrentScreen(this);
@@ -92,10 +76,10 @@ public class GameScreen implements Screen {
         table.add(topPanel).expandX().fillX().padTop(20).row();
 
         Table numberPanel = new Table();
-        for (int i = 1; i <= board.getGridSize(); i++) {
+        for (int i = 0; i <= board.getGridSize(); i++) {
             TextButton numBtn = createNumberButton(i);
             numberPanel.add(numBtn).width(50).height(50).pad(5);
-            if (i % 5 == 0) numberPanel.row();
+            if (i % 9 == 0) numberPanel.row();
         }
 
         table.add(numberPanel).expandY().bottom().padBottom(20);
@@ -185,12 +169,10 @@ public class GameScreen implements Screen {
             currentUser.setLevel(currentUser.getLevel() + 1);
             game.dbHelper.updateUserStats(currentUser);
 
-            // Проверка достижений
             game.achievementSystem.checkAchievements(currentUser);
 
             winDialog.text("\nLevel up! Now you're level " + currentUser.getLevel());
 
-            // Показ новых достижений
             for (String achievementId : currentUser.getUnlockedAchievements()) {
                 AchievementSystem.Achievement achievement =
                     AchievementSystem.ALL_ACHIEVEMENTS.get(achievementId);
@@ -204,14 +186,28 @@ public class GameScreen implements Screen {
         winDialog.show(stage);
     }
 
-    @Override
-    public void render(float delta) {
-        playTime += delta;
-        game.getRenderer().render(delta);
+    private void updateTimer(float delta) {
+        if (!isPaused && !board.isSolved()) {
+            playTime += delta;
+            timeLabel.setText(formatTime(playTime));
+        }
+    }
+
+    private String formatTime(float seconds) {
+        int minutes = (int)(seconds / 60);
+        int secs = (int)(seconds % 60);
+        return String.format("%02d:%02d", minutes, secs);
     }
 
     @Override
+    public void render(float delta) {
+        game.getRenderer().render(delta);
+    }
+
     public void resize(int width, int height) {
+        if (board != null) {
+            board.updateSize();
+        }
         stage.getViewport().update(width, height, true);
     }
 
@@ -225,13 +221,6 @@ public class GameScreen implements Screen {
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
-
-    @SuppressWarnings("DefaultLocale")
-    public String getFormattedTime() {
-        int minutes = (int)(playTime / 60);
-        int seconds = (int)(playTime % 60);
-        return String.format("%02d:%02d", minutes, seconds);
-    }
 
     public boolean isMultiplayer() {
         return board != null && board.isMultiplayer();

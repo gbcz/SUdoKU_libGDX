@@ -8,8 +8,8 @@ import com.badlogic.gdx.math.Vector3;
 public class SudokuBoard {
     private int[][] grid;
     final int gridSize;
-    final float boardX;
-    final float boardY;
+    float boardX;
+    float boardY;
     float cellSize;
     private final OrthographicCamera camera;
     private float selectionTimer = 0;
@@ -19,24 +19,30 @@ public class SudokuBoard {
     private int opponentProgress;
     int selectedRow = -1;
     int selectedCol = -1;
-    private int[] availableNumbers;
+    private final int[] availableNumbers;
     private int selectedNumber = 0;
     private float numberSelectorY;
-    private float numberSelectorHeight = 1.5f;
-    private static final float SELECTION_ANIMATION_TIME = 0.5f;
-    private static final float LINE_THICKNESS = 2f;
-    private static final float BLOCK_LINE_THICKNESS = 4f;
-    private static final float NUMBER_PANEL_BORDER = 3f;
+    private float x, y;
     private static final float NUMBER_PANEL_HEIGHT = 1.8f;
-    private int blockSize;
+    private final int blockSize;
     private boolean multiplayer = false;
+    public void updatePosition() {
+        float totalSize = gridSize * cellSize;
+        this.x = (Gdx.graphics.getWidth() - totalSize) / 2;
+        this.y = (Gdx.graphics.getHeight() - totalSize) / 2;
+    }
+
+    public void setCellSize(float cellSize) {
+        this.cellSize = cellSize;
+        updatePosition();
+    }
     public int getBlockSize() { switch (gridSize) {
-        case 6:
+        case 4:
             return 2;
         case 9:
             return 3;
-        case 12:
-            return 3;
+        case 16:
+            return 4;
         default:
             throw new IllegalArgumentException("Unsupported grid size");
         }
@@ -50,37 +56,53 @@ public class SudokuBoard {
         this.multiplayer = multiplayer;
     }
 
-    public SudokuBoard(OrthographicCamera camera, float boardX, float boardY,
-                       float worldScale, int gridSize, int cellsToRemove, int[][] savedGrid) {
+    public SudokuBoard(OrthographicCamera camera, float worldScale, int gridSize, int cellsToRemove, int[][] savedGrid) {
         this.camera = camera;
-        this.cellSize = worldScale * 0.9f;
         this.gridSize = gridSize;
         this.blockSize = getBlockSize();
 
-        availableNumbers = new int[gridSize];
+        this.cellSize = calculateCellSize(worldScale);
+
+        this.availableNumbers = new int[gridSize];
         for (int i = 0; i < gridSize; i++) {
             availableNumbers[i] = i + 1;
         }
 
-        float scaleFactor = 1f;
-        if (gridSize == 12) scaleFactor = 0.85f;
-        if (gridSize == 6) scaleFactor = 1.1f;
+        centerBoard();
 
-        this.cellSize *= scaleFactor;
+        this.grid = (savedGrid != null) ? savedGrid :
+            SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
 
-        float totalBoardHeight = gridSize * cellSize;
-        float totalHeight = totalBoardHeight + cellSize * numberSelectorHeight;
-
-        this.boardX = (SudokuGame.WORLD_WIDTH - gridSize * cellSize) / 2;
-        this.boardY = SudokuGame.WORLD_HEIGHT - SudokuGame.BOARD_OFFSET_Y - totalBoardHeight;
-        this.numberSelectorY = boardY - cellSize * numberSelectorHeight;
-
-        if (savedGrid != null) {
-            this.grid = savedGrid;
-        } else {
-            this.grid = SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
-        }
         handleInput();
+    }
+
+    private float calculateCellSize(float worldScale) {
+        float baseCellSize = worldScale * 0.9f;
+        switch (gridSize) {
+            case 4:  return baseCellSize * 1.1f;
+            case 9:  return baseCellSize;
+            case 16: return baseCellSize * 0.85f;
+            default: return baseCellSize;
+        }
+    }
+
+    private void centerBoard() {
+        float totalSize = gridSize * cellSize;
+
+        this.boardX = (Gdx.graphics.getWidth() - totalSize) / 2;
+        this.boardY = (Gdx.graphics.getHeight() - totalSize) / 2;
+
+        this.numberSelectorY = boardY - cellSize * 1.5f;
+    }
+
+    public void updateSize() {
+        centerBoard();
+    }
+
+
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
     }
 
     public boolean isValidMove(int row, int col, int num) {
@@ -101,21 +123,21 @@ public class SudokuBoard {
             }
         }
 
-        if (gridSize == 6) {
-            return isValidFor6x6(row, col, num);
+        if (gridSize == 4) {
+            return isValidFor4x4(row, col, num);
         }
 
         return true;
     }
 
-    private boolean isValidFor6x6(int row, int col, int num) {
+    private boolean isValidFor4x4(int row, int col, int num) {
         int colorBlockRow = row / 2;
-        int colorBlockCol = col / 3;
+        int colorBlockCol = col / 2;
 
         for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 3; j++) {
+            for (int j = 0; j < 2; j++) {
                 int r = colorBlockRow * 2 + i;
-                int c = colorBlockCol * 3 + j;
+                int c = colorBlockCol * 2 + j;
                 if (grid[r][c] == num && !(r == row && c == col)) {
                     return false;
                 }
@@ -123,8 +145,6 @@ public class SudokuBoard {
         }
         return true;
     }
-
-
 
     public void handleInput() {
         if (Gdx.input.justTouched()) {
@@ -250,4 +270,20 @@ public class SudokuBoard {
         this.opponentProgress = 0;
     }
     public void updateOpponentProgress(int progress) {this.opponentProgress = progress;}
+
+    public float getSelectionTimer() {
+        return selectionTimer;
+    }
+
+    public void setSelectionTimer(float selectionTimer) {
+        this.selectionTimer = selectionTimer;
+    }
+
+    public boolean isIncreasing() {
+        return increasing;
+    }
+
+    public void setIncreasing(boolean increasing) {
+        this.increasing = increasing;
+    }
 }

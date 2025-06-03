@@ -87,7 +87,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         if (screen.getCurrentUser() != null) {
@@ -106,7 +106,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
@@ -118,7 +118,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
@@ -130,7 +130,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
@@ -142,7 +142,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
@@ -154,7 +154,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
@@ -166,7 +166,7 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
@@ -178,13 +178,15 @@ public class SudokuRenderer implements Disposable {
 
         font.setColor(ThemeManager.getTitleColor());
         font.getData().setScale(2f);
-        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
         font.getData().setScale(1f);
 
         batch.end();
     }
 
     private void renderBoard(SudokuBoard board) {
+        board.updatePosition();
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(ThemeManager.getBackgroundColor());
         shapeRenderer.rect(board.getX(), board.getY(), board.getSize(), board.getSize());
@@ -194,55 +196,70 @@ public class SudokuRenderer implements Disposable {
         float cellSize = board.getCellSize();
         for (int row = 0; row < board.getGridSize(); row++) {
             for (int col = 0; col < board.getGridSize(); col++) {
-                renderCell(board, row, col, cellSize);
+                if (board.isSelected(row, col)) {
+                    shapeRenderer.setColor(ThemeManager.getSelectionColor());
+                    shapeRenderer.rect(
+                        board.getX() + col * cellSize,
+                        board.getY() + row * cellSize,
+                        cellSize, cellSize
+                    );
+                }
             }
         }
         shapeRenderer.end();
 
+        batch.begin();
+        font.setColor(ThemeManager.getNumberColor());
+        for (int row = 0; row < board.getGridSize(); row++) {
+            for (int col = 0; col < board.getGridSize(); col++) {
+                int value = board.getValue(row, col);
+                if (value != 0) {
+                    float x = board.getX() + col * cellSize + cellSize/2 - 5;
+                    float y = board.getY() + row * cellSize + cellSize/2 + 5;
+                    font.draw(batch, String.valueOf(value), x, y);
+                }
+            }
+        }
+        batch.end();
+
         renderGridLines(board);
     }
 
-    private void renderCell(SudokuBoard board, int row, int col, float cellSize) {
-        float x = board.getX() + col * cellSize;
-        float y = board.getY() + row * cellSize;
-
-        if (board.isSelected(row, col)) {
-            shapeRenderer.setColor(ThemeManager.getSelectionColor());
-            shapeRenderer.rect(x, y, cellSize, cellSize);
-        }
-
-        int value = board.getValue(row, col);
-        if (value != 0) {
-            batch.begin();
-            font.setColor(ThemeManager.getNumberColor());
-            font.draw(batch, String.valueOf(value),
-                x + cellSize/2 - 5, y + cellSize/2 + 5);
-            batch.end();
-        }
-    }
-
     private void renderGridLines(SudokuBoard board) {
+        float x = board.getX();
+        float y = board.getY();
+        float size = board.getSize();
+        float cellSize = board.getCellSize();
+        int blockSize = board.getBlockSize();
+
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        Gdx.gl.glLineWidth(1.0f);
+
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
         shapeRenderer.setColor(ThemeManager.getLineColor());
 
-        float size = board.getSize();
-        float cellSize = board.getCellSize();
-        float x = board.getX();
-        float y = board.getY();
-
         for (int i = 0; i <= board.getGridSize(); i++) {
-            shapeRenderer.line(x, y + i * cellSize, x + size, y + i * cellSize);
-            shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size);
+            shapeRenderer.line(x, y + i * cellSize, x + size, y + i * cellSize); // горизонтальные
+            shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size); // вертикальные
         }
-
-        shapeRenderer.setColor(ThemeManager.getBlockLineColor());
-        float blockSize = board.getBlockSize() * cellSize;
-        for (int i = 0; i <= board.getGridSize() / board.getBlockSize(); i++) {
-            shapeRenderer.line(x, y + i * blockSize, x + size, y + i * blockSize);
-            shapeRenderer.line(x + i * blockSize, y, x + i * blockSize, y + size);
-        }
-
         shapeRenderer.end();
+
+        Gdx.gl.glLineWidth(3.0f);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(ThemeManager.getBlockLineColor());
+
+        int blocks = board.getGridSize() / blockSize;
+        for (int i = 0; i <= blocks; i++) {
+            float pos = i * blockSize * cellSize;
+            shapeRenderer.line(x, y + pos, x + size, y + pos); // горизонтальные
+            shapeRenderer.line(x + pos, y, x + pos, y + size); // вертикальные
+        }
+        shapeRenderer.end();
+
+        Gdx.gl.glLineWidth(1.0f);
+        Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
     @Override

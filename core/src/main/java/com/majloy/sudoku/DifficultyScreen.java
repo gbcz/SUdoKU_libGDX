@@ -32,9 +32,9 @@ public class DifficultyScreen implements Screen {
         Label title = new Label("Select Board Size", game.skin, "default");
         title.setAlignment(Align.center);
 
-        TextButton boardSix = createBoardButton("6x6", 6);
+        TextButton boardSix = createBoardButton("4x4", 4);
         TextButton boardNine = createBoardButton("9x9", 9);
-        TextButton boardTwelve = createBoardButton("12x12", 12);
+        TextButton boardTwelve = createBoardButton("16x16", 16);
         TextButton backButton = new TextButton("Back", game.skin);
 
         backButton.addListener(new ClickListener() {
