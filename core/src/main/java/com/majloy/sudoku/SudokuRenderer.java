@@ -186,21 +186,20 @@ public class SudokuRenderer implements Disposable {
 
     private void renderBoard(SudokuBoard board) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-
         shapeRenderer.setColor(ThemeManager.getBackgroundColor());
-        shapeRenderer.rect(board.getX(), board.getY(),
-            board.getSize(), board.getSize());
+        shapeRenderer.rect(board.getX(), board.getY(), board.getSize(), board.getSize());
+        shapeRenderer.end();
 
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         float cellSize = board.getCellSize();
         for (int row = 0; row < board.getGridSize(); row++) {
             for (int col = 0; col < board.getGridSize(); col++) {
                 renderCell(board, row, col, cellSize);
             }
         }
+        shapeRenderer.end();
 
         renderGridLines(board);
-
-        shapeRenderer.end();
     }
 
     private void renderCell(SudokuBoard board, int row, int col, float cellSize) {
@@ -231,26 +230,16 @@ public class SudokuRenderer implements Disposable {
         float x = board.getX();
         float y = board.getY();
 
-        //Тонкие линии
         for (int i = 0; i <= board.getGridSize(); i++) {
-            //Горизонтальные
-            shapeRenderer.line(x, y + i * cellSize,
-                x + size, y + i * cellSize);
-            //Вертикальные
-            shapeRenderer.line(x + i * cellSize, y,
-                x + i * cellSize, y + size);
+            shapeRenderer.line(x, y + i * cellSize, x + size, y + i * cellSize);
+            shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size);
         }
 
-        //Толстые линии блоков
         shapeRenderer.setColor(ThemeManager.getBlockLineColor());
         float blockSize = board.getBlockSize() * cellSize;
         for (int i = 0; i <= board.getGridSize() / board.getBlockSize(); i++) {
-            //Горизонтальные
-            shapeRenderer.line(x, y + i * blockSize,
-                x + size, y + i * blockSize);
-            //Вертикальные
-            shapeRenderer.line(x + i * blockSize, y,
-                x + i * blockSize, y + size);
+            shapeRenderer.line(x, y + i * blockSize, x + size, y + i * blockSize);
+            shapeRenderer.line(x + i * blockSize, y, x + i * blockSize, y + size);
         }
 
         shapeRenderer.end();
