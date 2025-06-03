@@ -71,7 +71,7 @@ public class ProfileScreen implements Screen {
         loginButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new RegisterScreen(game, mainMenu));
+                game.setScreen(new LoginScreen(game, mainMenu));
                 dispose();
             }
         });
@@ -80,7 +80,7 @@ public class ProfileScreen implements Screen {
         table.add(nameLabel).padBottom(20).row();
         table.add(levelLabel).padBottom(20).row();
         table.add(gamesLabel).padBottom(40).row();
-        table.add(registrationButton).width(180).height(60);
+        table.add(registrationButton).width(180).height(60).row();
         table.add(loginButton).width(180).height(60).row();
         table.add(backButton).width(400).height(80);
 

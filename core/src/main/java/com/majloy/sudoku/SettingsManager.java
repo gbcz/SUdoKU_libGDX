@@ -1,35 +1,39 @@
 package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Preferences;
 
 public class SettingsManager {
-    private final Preferences prefs;
+    private final GamePreferences prefs;
 
     public SettingsManager() {
-        prefs = Gdx.app.getPreferences("sudoku_settings");
+        prefs = GamePreferences.getInstance();
     }
 
     public boolean isSoundEnabled() {
-        return prefs.getBoolean("sound_enabled", true);
+        return prefs.isSoundEnabled();
     }
 
     public void setSoundEnabled(boolean enabled) {
-        prefs.putBoolean("sound_enabled", enabled);
-        prefs.flush();
+        prefs.saveSettings(enabled, getTheme(), getColorScheme());
     }
 
     public String getTheme() {
-        return prefs.getString("theme", "classic");
+        return prefs.getTheme();
     }
 
     public void setTheme(String theme) {
-        prefs.putString("theme", theme);
-        prefs.flush();
+        prefs.saveSettings(isSoundEnabled(), theme, getColorScheme());
+    }
+
+    public String getColorScheme() {
+        return prefs.getColorScheme();
+    }
+
+    public void setColorScheme(String colorScheme) {
+        prefs.saveSettings(isSoundEnabled(), getTheme(), colorScheme);
     }
 
     public void resetToDefaults() {
-        prefs.clear();
-        prefs.flush();
+        prefs.saveSettings(true, "classic", "default");
     }
 }

@@ -68,8 +68,12 @@ public class DifficultyLevelScreen implements Screen {
                 prefs.remove("has_save");
                 prefs.flush();
 
-                GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove, game.currentUser, game.savedGame.grid);
-                game.setScreen(gameScreen);
+                if (game.savedGame != null) {
+                    GameScreen gameScreen = new GameScreen(game, gridSize, cellsToRemove, game.currentUser, game.savedGame.grid);
+                    game.setScreen(gameScreen);
+                } else {
+                    game.setScreen(new GameScreen(game, gridSize, cellsToRemove, game.currentUser, null));
+                }
                 dispose();
             }
         });

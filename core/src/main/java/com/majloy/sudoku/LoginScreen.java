@@ -105,6 +105,11 @@ public class LoginScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        stage.getViewport().getCamera().position.set(
+            stage.getViewport().getWorldWidth()/2,
+            stage.getViewport().getWorldHeight()/2,
+            0
+        );
     }
 
     @Override

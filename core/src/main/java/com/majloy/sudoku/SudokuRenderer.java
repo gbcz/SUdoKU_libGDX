@@ -54,8 +54,8 @@ public class SudokuRenderer implements Disposable {
                 renderLoginScreen((LoginScreen) currentScreen, delta);
             } else if (currentScreen instanceof StatisticsScreen) {
                 renderStatisticsScreen((StatisticsScreen) currentScreen, delta);
-            } else if (currentScreen instanceof SettingsScreen) {
-                renderSettingsScreen((SettingsScreen) currentScreen, delta);
+            } else if (currentScreen instanceof SettingScreen) {
+                renderSettingsScreen((SettingScreen) currentScreen, delta);
             }
         }
 
@@ -105,42 +105,84 @@ public class SudokuRenderer implements Disposable {
     private void renderDifficultyScreen(DifficultyScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
     private void renderDifficultyLevelScreen(DifficultyLevelScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
     private void renderProfileScreen(ProfileScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
     private void renderRegistrationScreen(RegisterScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
     private void renderLoginScreen(LoginScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
     private void renderStatisticsScreen(StatisticsScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
-    private void renderSettingsScreen(SettingsScreen screen, float delta) {
+    private void renderSettingsScreen(SettingScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SUDOKU", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
         batch.end();
     }
 
@@ -169,11 +211,17 @@ public class SudokuRenderer implements Disposable {
             shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size);
         }
 
+        int blockSize = board.getBlockSize();
+        if (blockSize <= 0) {
+            shapeRenderer.end();
+            return;
+        }
+
         shapeRenderer.setColor(ThemeManager.getBlockLineColor());
-        float blockSize = board.getBlockSize() * cellSize;
-        for (int i = 0; i <= board.getGridSize() / board.getBlockSize(); i++) {
-            shapeRenderer.line(x, y + i * blockSize, x + size, y + i * blockSize);
-            shapeRenderer.line(x + i * blockSize, y, x + i * blockSize, y + size);
+        float blockSizePixels = blockSize * cellSize;
+        for (int i = 0; i <= board.getGridSize() / blockSize; i++) {
+            shapeRenderer.line(x, y + i * blockSizePixels, x + size, y + i * blockSizePixels);
+            shapeRenderer.line(x + i * blockSizePixels, y, x + i * blockSizePixels, y + size);
         }
 
         shapeRenderer.end();

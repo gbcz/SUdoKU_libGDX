@@ -18,6 +18,7 @@ public class SettingScreen implements Screen {
     public SettingScreen(SudokuGame game) {
         this.game = game;
         this.prefs = Gdx.app.getPreferences("SudokuSettings");
+        game.getRenderer().setCurrentScreen(this);
     }
 
     @Override
@@ -82,15 +83,22 @@ public class SettingScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(0.95f, 0.95f, 0.95f, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-        stage.act(delta);
-        stage.draw();
+        game.getRenderer().render(delta);
     }
 
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        stage.getViewport().getCamera().position.set(
+            stage.getViewport().getWorldWidth()/2,
+            stage.getViewport().getWorldHeight()/2,
+            0
+        );
+    }
+
+    @Override
+    public void dispose() {
+        stage.dispose();
     }
 
     @Override
@@ -106,10 +114,5 @@ public class SettingScreen implements Screen {
     @Override
     public void hide() {
 
-    }
-
-    @Override
-    public void dispose() {
-        stage.dispose();
     }
 }

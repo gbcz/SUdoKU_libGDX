@@ -49,12 +49,12 @@ public class GameScreen implements Screen {
         board.dispose();
     }
 
-    // Остальные методы интерфейса Screen...
     @Override public void show() {}
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}
 
+    @SuppressWarnings("DefaultLocale")
     public String getFormattedTime() {
         int minutes = (int)(playTime / 60);
         int seconds = (int)(playTime % 60);
