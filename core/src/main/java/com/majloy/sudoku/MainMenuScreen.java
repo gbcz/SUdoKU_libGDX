@@ -8,6 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -18,16 +19,18 @@ public class MainMenuScreen implements Screen {
     private Stage stage;
     private User currentUser;
     private Label userInfoLabel;
+    private MainMenuScreen mainMenu;
 
     public MainMenuScreen(SudokuGame game) {
         this.game = game;
-        setupUI();
+        mainMenu = this;
         game.getRenderer().setCurrentScreen(this);
     }
 
-    private void setupUI() {
+    @Override public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        game.getRenderer().setCurrentStage(stage);
 
         Table mainTable = new Table();
         mainTable.setFillParent(true);
@@ -58,7 +61,7 @@ public class MainMenuScreen implements Screen {
         Image avatar = new Image(game.skin, "default-round");
         avatar.setSize(60, 60);
 
-        Label username = new Label("Guest", game.skin);
+        Label username = new Label("Guest", game.skin, "default");
         Label level = new Label("Level: -", game.skin, "default");
 
         if (currentUser != null) {
@@ -76,12 +79,12 @@ public class MainMenuScreen implements Screen {
     private Table createMenuButtons() {
         Table buttons = new Table();
         buttons.defaults().width(300).height(70).padBottom(15);
-        TextButton newGameBtn = new TextButton("New Game", game.skin);
-        TextButton continueBtn = new TextButton("Continue", game.skin);
-        TextButton statisticsBtn = new TextButton("Statistics", game.skin);
-        TextButton profileBtn = new TextButton("Profile", game.skin);
-        TextButton settingsBtn = new TextButton("Settings", game.skin);
-        TextButton exitBtn = new TextButton("Exit", game.skin);
+        TextButton newGameBtn = new TextButton("New Game", game.skin, "default");
+        TextButton continueBtn = new TextButton("Continue", game.skin, "default");
+        TextButton statisticsBtn = new TextButton("Statistics", game.skin, "default");
+        TextButton profileBtn = new TextButton("Profile", game.skin, "default");
+        TextButton settingsBtn = new TextButton("Settings", game.skin, "default");
+        TextButton exitBtn = new TextButton("Exit", game.skin, "default");
         continueBtn.setDisabled(true);
 
         newGameBtn.addListener(new ClickListener() {
@@ -119,10 +122,18 @@ public class MainMenuScreen implements Screen {
             }
         });
 
+        profileBtn.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.setScreen(new ProfileScreen(game, currentUser, mainMenu));
+                dispose();
+            }
+        });
+
         settingsBtn.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SettingsScreen(game));
+                game.setScreen(new SettingScreen(game));
                 dispose();
             }
         });
@@ -150,14 +161,17 @@ public class MainMenuScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        stage.getViewport().getCamera().position.set(
+            stage.getViewport().getWorldWidth()/2,
+            stage.getViewport().getWorldHeight()/2,
+            0
+        );
     }
 
     @Override
     public void dispose() {
         stage.dispose();
     }
-
-    @Override public void show() {}
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}

@@ -25,6 +25,7 @@ public class GameScreen implements Screen {
     private void setupUI() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        game.getRenderer().setCurrentStage(stage);
 
         Table table = new Table();
         table.setFillParent(true);

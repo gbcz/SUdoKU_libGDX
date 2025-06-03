@@ -24,11 +24,12 @@ public class SettingScreen implements Screen {
     public void show() {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        game.getRenderer().setCurrentStage(stage);
 
         Table table = new Table();
         table.setFillParent(true);
 
-        Label title = new Label("Settings", game.skin, "title");
+        Label title = new Label("Settings", game.skin, "default");
         table.add(title).padBottom(50).row();
 
         //Настройка звука

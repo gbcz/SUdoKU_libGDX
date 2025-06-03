@@ -15,7 +15,6 @@ public class SudokuRenderer implements Disposable {
     private final SpriteBatch batch;
     private final BitmapFont font;
     private final Skin skin;
-
     private Stage currentStage;
     private Screen currentScreen;
 
@@ -45,8 +44,14 @@ public class SudokuRenderer implements Disposable {
                 renderMainMenuScreen((MainMenuScreen) currentScreen, delta);
             } else if (currentScreen instanceof DifficultyScreen) {
                 renderDifficultyScreen((DifficultyScreen) currentScreen, delta);
+            } else if (currentScreen instanceof DifficultyLevelScreen) {
+                renderDifficultyLevelScreen((DifficultyLevelScreen) currentScreen, delta);
             } else if (currentScreen instanceof ProfileScreen) {
                 renderProfileScreen((ProfileScreen) currentScreen, delta);
+            } else if (currentScreen instanceof RegisterScreen) {
+                renderRegistrationScreen((RegisterScreen) currentScreen, delta);
+            } else if (currentScreen instanceof LoginScreen) {
+                renderLoginScreen((LoginScreen) currentScreen, delta);
             } else if (currentScreen instanceof StatisticsScreen) {
                 renderStatisticsScreen((StatisticsScreen) currentScreen, delta);
             } else if (currentScreen instanceof SettingsScreen) {
@@ -103,7 +108,25 @@ public class SudokuRenderer implements Disposable {
         batch.end();
     }
 
+    private void renderDifficultyLevelScreen(DifficultyLevelScreen screen, float delta) {
+        batch.begin();
+        batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+    }
+
     private void renderProfileScreen(ProfileScreen screen, float delta) {
+        batch.begin();
+        batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+    }
+
+    private void renderRegistrationScreen(RegisterScreen screen, float delta) {
+        batch.begin();
+        batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+    }
+
+    private void renderLoginScreen(LoginScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();

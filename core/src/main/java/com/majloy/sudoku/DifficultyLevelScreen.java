@@ -18,12 +18,12 @@ public class DifficultyLevelScreen implements Screen {
 
     public DifficultyLevelScreen(SudokuGame game) {
         this.game = game;
-        setupUI();
         game.getRenderer().setCurrentScreen(this);
     }
 
-    private void setupUI() {
+    @Override public void show() {
         stage = new Stage(new ScreenViewport());
+        game.getRenderer().setCurrentStage(stage);
         Gdx.input.setInputProcessor(stage);
 
         Table mainTable = new Table();
@@ -84,14 +84,17 @@ public class DifficultyLevelScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
+        stage.getViewport().getCamera().position.set(
+            stage.getViewport().getWorldWidth()/2,
+            stage.getViewport().getWorldHeight()/2,
+            0
+        );
     }
 
     @Override
     public void dispose() {
         stage.dispose();
     }
-
-    @Override public void show() {}
     @Override public void pause() {}
     @Override public void resume() {}
     @Override public void hide() {}

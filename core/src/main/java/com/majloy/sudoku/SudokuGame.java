@@ -43,8 +43,13 @@ public class SudokuGame extends Game {
     }
 
     @Override
+    public void resize(int width, int height) {
+    }
+
+    @Override
     public void render() {
         renderer.render(Gdx.graphics.getDeltaTime());
+        super.render();
     }
 
     @Override
