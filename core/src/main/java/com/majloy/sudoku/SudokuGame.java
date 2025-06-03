@@ -65,6 +65,18 @@ public class SudokuGame extends Game {
         return renderer;
     }
 
+    public static class SavedGameState {
+        public int gridSize;
+        public int cellsToRemove;
+        public int[][] grid;
+
+        public SavedGameState(int gridSize, int cellsToRemove, int[][] grid) {
+            this.gridSize = gridSize;
+            this.cellsToRemove = cellsToRemove;
+            this.grid = grid;
+        }
+    }
+
     public void applySettings() {
     }
 }

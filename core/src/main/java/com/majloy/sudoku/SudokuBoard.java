@@ -30,7 +30,18 @@ public class SudokuBoard {
     private static final float NUMBER_PANEL_HEIGHT = 1.8f;
     private int blockSize;
     private boolean multiplayer = false;
-    public int getBlockSize() { return blockSize; }
+    public int getBlockSize() { switch (gridSize) {
+        case 6:
+            return 2;
+        case 9:
+            return 3;
+        case 12:
+            return 3;
+        default:
+            throw new IllegalArgumentException("Unsupported grid size");
+        }
+    }
+
     public boolean isSelected(int row, int col) {
         return selectedRow == row && selectedCol == col;
     }
@@ -69,18 +80,84 @@ public class SudokuBoard {
         } else {
             this.grid = SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
         }
+        handleInput();
     }
+
+    public boolean isValidMove(int row, int col, int num) {
+        for (int i = 0; i < gridSize; i++) {
+            if (grid[row][i] == num || grid[i][col] == num) {
+                return false;
+            }
+        }
+
+        int blockRowStart = row - row % blockSize;
+        int blockColStart = col - col % blockSize;
+
+        for (int i = 0; i < blockSize; i++) {
+            for (int j = 0; j < blockSize; j++) {
+                if (grid[blockRowStart + i][blockColStart + j] == num) {
+                    return false;
+                }
+            }
+        }
+
+        if (gridSize == 6) {
+            return isValidFor6x6(row, col, num);
+        }
+
+        return true;
+    }
+
+    private boolean isValidFor6x6(int row, int col, int num) {
+        int colorBlockRow = row / 2;
+        int colorBlockCol = col / 3;
+
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < 3; j++) {
+                int r = colorBlockRow * 2 + i;
+                int c = colorBlockCol * 3 + j;
+                if (grid[r][c] == num && !(r == row && c == col)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
 
     public void handleInput() {
         if (Gdx.input.justTouched()) {
             Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
 
+            if (touchPos.x < boardX || touchPos.y < boardY ||
+                touchPos.x > boardX + gridSize * cellSize ||
+                touchPos.y > boardY + gridSize * cellSize) {
+                return;
+            }
+
+            if (touchPos.x >= boardX && touchPos.x < boardX + gridSize * cellSize &&
+                touchPos.y >= numberSelectorY && touchPos.y < numberSelectorY + cellSize * NUMBER_PANEL_HEIGHT) {
+
+                int numberIndex = (int)((touchPos.x - boardX) / ((gridSize * cellSize) / gridSize));
+                if (numberIndex >= 0 && numberIndex < availableNumbers.length) {
+                    selectedNumber = availableNumbers[numberIndex];
+                }
+                return;
+            }
+
             if (touchPos.x >= boardX && touchPos.x < boardX + gridSize * cellSize &&
                 touchPos.y >= boardY && touchPos.y < boardY + gridSize * cellSize) {
 
                 selectedCol = (int)((touchPos.x - boardX) / cellSize);
                 selectedRow = (int)((touchPos.y - boardY) / cellSize);
+
+                if (selectedNumber != 0 && grid[selectedRow][selectedCol] == 0) {
+                    if (isValidMove(selectedRow, selectedCol, selectedNumber)) {
+                        grid[selectedRow][selectedCol] = selectedNumber;
+                    }
+                }
             }
         }
     }
@@ -96,7 +173,81 @@ public class SudokuBoard {
     public int getSelectedRow() { return selectedRow; }
     public int getSelectedCol() { return selectedCol; }
     public boolean isMultiplayer() { return multiplayer; }
-    public String getOpponentName() { return opponentName; }
-    public int getOpponentProgress() { return opponentProgress; }
+    public void setGrid(int[][] grid) {this.grid = grid;}
+    public int getCellValue(int row, int col) {
+        if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
+            throw new IllegalArgumentException("Invalid cell coordinates");
+        }
+        return grid[row][col];
+    }
+    public void setCellValue(int row, int col, int value) {
+        if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
+            throw new IllegalArgumentException("Invalid cell coordinates");
+        }
+        if (value < 0 || value > gridSize) {
+            throw new IllegalArgumentException("Invalid cell value");
+        }
+        grid[row][col] = value;
+    }
+    public void setSelectedCellValue(int value) {
+        if (hasSelectedCell() && grid[selectedRow][selectedCol] == 0) {
+            if (isValidMove(selectedRow, selectedCol, value)) {
+                grid[selectedRow][selectedCol] = value;
+            }
+        }
+    }
+    public int[] findEmptyCell() {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (grid[row][col] == 0) {
+                    return new int[]{row, col};
+                }
+            }
+        }
+        return null;
+    }
+    public int getSolutionForCell(int row, int col) {
+        // В реальной реализации здесь должен быть доступ к решению
+        // Для примера возвращаем 1
+        return 1;
+    }
+
+    public int getCellsToRemove() {
+        int count = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 0) count++;
+            }
+        }
+        return count;
+    }
+    private int countEmptyCells() {
+        int count = 0;
+        for (int[] row : grid) {
+            for (int cell : row) {
+                if (cell == 0) count++;
+            }
+        }
+        return count;
+    }
+    public void setOpponentName(String opponentName) {this.opponentName = opponentName;}
+    public int getOpponentProgress() {return opponentProgress;}
+    public String getOpponentName() {return opponentName;}
     public void dispose() {}
+    public boolean isSolved() {
+        for (int row = 0; row < gridSize; row++) {
+            for (int col = 0; col < gridSize; col++) {
+                if (grid[row][col] == 0 || !isValidMove(row, col, grid[row][col])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    public void setMultiplayerMode(String opponentName) {
+        this.isMultiplayer = true;
+        this.opponentName = opponentName;
+        this.opponentProgress = 0;
+    }
+    public void updateOpponentProgress(int progress) {this.opponentProgress = progress;}
 }

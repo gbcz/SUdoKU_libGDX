@@ -70,8 +70,6 @@ public class SudokuRenderer implements Disposable {
 
         batch.begin();
         font.setColor(ThemeManager.getTextColor());
-        font.draw(batch, "Time: " + screen.getFormattedTime(), 20, Gdx.graphics.getHeight() - 20);
-        font.draw(batch, "Hints: " + screen.getHintsLeft(), 20, Gdx.graphics.getHeight() - 50);
 
         if (screen.isMultiplayer()) {
             font.setColor(ThemeManager.getMultiplayerColor());
@@ -186,85 +184,76 @@ public class SudokuRenderer implements Disposable {
         batch.end();
     }
 
-    public void renderBoard(SudokuBoard board) {
+    private void renderBoard(SudokuBoard board) {
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+
         shapeRenderer.setColor(ThemeManager.getBackgroundColor());
-        shapeRenderer.rect(board.getX(), board.getY(), board.getSize(), board.getSize());
-        shapeRenderer.end();
-
-        renderGrid(board);
-        renderNumbers(board);
-        renderSelection(board);
-    }
-
-    private void renderGrid(SudokuBoard board) {
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
-
-        float cellSize = board.getCellSize();
-        float size = board.getSize();
-        float x = board.getX();
-        float y = board.getY();
-
-        shapeRenderer.setColor(ThemeManager.getLineColor());
-        for (int i = 0; i <= board.getGridSize(); i++) {
-            shapeRenderer.line(x, y + i * cellSize, x + size, y + i * cellSize);
-            shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size);
-        }
-
-        int blockSize = board.getBlockSize();
-        if (blockSize <= 0) {
-            shapeRenderer.end();
-            return;
-        }
-
-        shapeRenderer.setColor(ThemeManager.getBlockLineColor());
-        float blockSizePixels = blockSize * cellSize;
-        for (int i = 0; i <= board.getGridSize() / blockSize; i++) {
-            shapeRenderer.line(x, y + i * blockSizePixels, x + size, y + i * blockSizePixels);
-            shapeRenderer.line(x + i * blockSizePixels, y, x + i * blockSizePixels, y + size);
-        }
-
-        shapeRenderer.end();
-    }
-
-    private void renderNumbers(SudokuBoard board) {
-        batch.begin();
-        font.setColor(ThemeManager.getNumberColor());
+        shapeRenderer.rect(board.getX(), board.getY(),
+            board.getSize(), board.getSize());
 
         float cellSize = board.getCellSize();
         for (int row = 0; row < board.getGridSize(); row++) {
             for (int col = 0; col < board.getGridSize(); col++) {
-                int value = board.getValue(row, col);
-                if (value != 0) {
-                    float x = board.getX() + col * cellSize;
-                    float y = board.getY() + row * cellSize;
-
-                    String text = String.valueOf(value);
-                    float textWidth = font.getData().getGlyph(text.charAt(0)).width * font.getScaleX();
-                    float textHeight = font.getCapHeight() * font.getScaleY();
-
-                    font.draw(batch, text,
-                        x + (cellSize - textWidth) / 2,
-                        y + (cellSize + textHeight) / 2);
-                }
+                renderCell(board, row, col, cellSize);
             }
         }
-        batch.end();
+
+        renderGridLines(board);
+
+        shapeRenderer.end();
     }
 
-    private void renderSelection(SudokuBoard board) {
-        if (board.hasSelectedCell()) {
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+    private void renderCell(SudokuBoard board, int row, int col, float cellSize) {
+        float x = board.getX() + col * cellSize;
+        float y = board.getY() + row * cellSize;
+
+        if (board.isSelected(row, col)) {
             shapeRenderer.setColor(ThemeManager.getSelectionColor());
-
-            float cellSize = board.getCellSize();
-            shapeRenderer.rect(
-                board.getX() + board.getSelectedCol() * cellSize,
-                board.getY() + board.getSelectedRow() * cellSize,
-                cellSize, cellSize);
-
-            shapeRenderer.end();
+            shapeRenderer.rect(x, y, cellSize, cellSize);
         }
+
+        int value = board.getValue(row, col);
+        if (value != 0) {
+            batch.begin();
+            font.setColor(ThemeManager.getNumberColor());
+            font.draw(batch, String.valueOf(value),
+                x + cellSize/2 - 5, y + cellSize/2 + 5);
+            batch.end();
+        }
+    }
+
+    private void renderGridLines(SudokuBoard board) {
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+        shapeRenderer.setColor(ThemeManager.getLineColor());
+
+        float size = board.getSize();
+        float cellSize = board.getCellSize();
+        float x = board.getX();
+        float y = board.getY();
+
+        //Тонкие линии
+        for (int i = 0; i <= board.getGridSize(); i++) {
+            //Горизонтальные
+            shapeRenderer.line(x, y + i * cellSize,
+                x + size, y + i * cellSize);
+            //Вертикальные
+            shapeRenderer.line(x + i * cellSize, y,
+                x + i * cellSize, y + size);
+        }
+
+        //Толстые линии блоков
+        shapeRenderer.setColor(ThemeManager.getBlockLineColor());
+        float blockSize = board.getBlockSize() * cellSize;
+        for (int i = 0; i <= board.getGridSize() / board.getBlockSize(); i++) {
+            //Горизонтальные
+            shapeRenderer.line(x, y + i * blockSize,
+                x + size, y + i * blockSize);
+            //Вертикальные
+            shapeRenderer.line(x + i * blockSize, y,
+                x + i * blockSize, y + size);
+        }
+
+        shapeRenderer.end();
     }
 
     @Override
