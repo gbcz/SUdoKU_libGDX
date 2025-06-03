@@ -42,6 +42,22 @@ public class ThemeManager {
         }
     }
 
+    public static Color getInitialNumberColor() {
+        return Color.BLACK;
+    }
+
+    public static Color getUserNumberColor() {
+        return new Color(0.1f, 0.5f, 0.8f, 1);
+    }
+
+    public static Color getErrorNumberColor() {
+        return Color.RED;
+    }
+
+    public static Color getConflictNumberColor() {
+        return new Color(1f, 0.5f, 0f, 1);
+    }
+
     public static Color getBackgroundColor() {
         return themes.get(currentTheme).backgroundColor;
     }

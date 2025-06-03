@@ -5,9 +5,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
+import java.util.Arrays;
+
 public class SudokuBoard {
     private int[][] grid;
-    final int gridSize;
+    int gridSize;
     float boardX;
     float boardY;
     float cellSize;
@@ -19,8 +21,10 @@ public class SudokuBoard {
     private final int[] availableNumbers;
     private float numberSelectorY;
     private float x, y;
-    private final int blockSize;
+    private int blockSize;
     private boolean multiplayer = false;
+    private int[][] originalGrid;
+
     public void updatePosition() {
         float totalSize = gridSize * cellSize;
         this.x = (Gdx.graphics.getWidth() - totalSize) / 2;
@@ -55,10 +59,23 @@ public class SudokuBoard {
             availableNumbers[i] = i + 1;
         }
 
-        centerBoard();
+        if (savedGrid != null) {
+            this.grid = copyGrid(savedGrid);
+            this.originalGrid = copyGrid(savedGrid);
+        } else {
+            this.grid = SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
+            this.originalGrid = copyGrid(this.grid);
+        }
 
-        this.grid = (savedGrid != null) ? savedGrid :
-            SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
+        centerBoard();
+    }
+
+    private int[][] copyGrid(int[][] source) {
+        int[][] copy = new int[source.length][];
+        for (int i = 0; i < source.length; i++) {
+            copy[i] = Arrays.copyOf(source[i], source[i].length);
+        }
+        return copy;
     }
 
     private float calculateCellSize(float worldScale) {
@@ -84,44 +101,26 @@ public class SudokuBoard {
         centerBoard();
     }
 
-    public boolean isValidMove(int row, int col, int num) {
+    public boolean isValidMove(int row, int col, int number) {
+        if (number == 0) return true;
+
         for (int i = 0; i < gridSize; i++) {
-            if (grid[row][i] == num || grid[i][col] == num) {
-                return false;
-            }
+            if (grid[row][i] == number && i != col) return false;
+            if (grid[i][col] == number && i != row) return false;
         }
 
-        int blockRowStart = row - row % blockSize;
-        int blockColStart = col - col % blockSize;
+        int blockStartRow = row - row % blockSize;
+        int blockStartCol = col - col % blockSize;
 
-        for (int i = 0; i < blockSize; i++) {
-            for (int j = 0; j < blockSize; j++) {
-                if (grid[blockRowStart + i][blockColStart + j] == num) {
+        for (int r = 0; r < blockSize; r++) {
+            for (int c = 0; c < blockSize; c++) {
+                if (grid[blockStartRow + r][blockStartCol + c] == number &&
+                    (blockStartRow + r) != row && (blockStartCol + c) != col) {
                     return false;
                 }
             }
         }
 
-        if (gridSize == 4) {
-            return isValidFor4x4(row, col, num);
-        }
-
-        return true;
-    }
-
-    private boolean isValidFor4x4(int row, int col, int num) {
-        int colorBlockRow = row / 2;
-        int colorBlockCol = col / 2;
-
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++) {
-                int r = colorBlockRow * 2 + i;
-                int c = colorBlockCol * 2 + j;
-                if (grid[r][c] == num && !(r == row && c == col)) {
-                    return false;
-                }
-            }
-        }
         return true;
     }
 
@@ -163,13 +162,55 @@ public class SudokuBoard {
         }
         grid[row][col] = value;
     }
-    public void setSelectedCellValue(int value) {
-        if (hasSelectedCell() && grid[selectedRow][selectedCol] == 0) {
-            if (isValidMove(selectedRow, selectedCol, value)) {
-                grid[selectedRow][selectedCol] = value;
+
+    public void setSelectedCellValue(int number) {
+        if (selectedRow >= 0 && selectedCol >= 0 &&
+            selectedRow < gridSize && selectedCol < gridSize) {
+
+            if (isCellEditable(selectedRow, selectedCol)) {
+                if (number == 0 || isValidMove(selectedRow, selectedCol, number)) {
+                    grid[selectedRow][selectedCol] = number;
+                } else {
+                    Gdx.app.log("Sudoku", "Invalid move!");
+                }
             }
         }
     }
+
+    public boolean isCellEditable(int row, int col) {
+        return originalGrid[row][col] == 0;
+    }
+
+    public boolean isValid(int row, int col, int value) {
+        if (value == 0) return true;
+
+        for (int i = 0; i < gridSize; i++) {
+            if (grid[row][i] == value && i != col) return false;
+            if (grid[i][col] == value && i != row) return false;
+        }
+
+        int blockRow = row - row % blockSize;
+        int blockCol = col - col % blockSize;
+
+        for (int r = 0; r < blockSize; r++) {
+            for (int c = 0; c < blockSize; c++) {
+                if (grid[blockRow + r][blockCol + c] == value &&
+                    (blockRow + r) != row && (blockCol + c) != col) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    public boolean hasConflict(int row, int col) {
+        int value = grid[row][col];
+        if (value == 0) return false;
+
+        return !isValid(row, col, value);
+    }
+
     public int[] findEmptyCell() {
         for (int row = 0; row < gridSize; row++) {
             for (int col = 0; col < gridSize; col++) {

@@ -2,6 +2,7 @@ package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -209,13 +210,22 @@ public class SudokuRenderer implements Disposable {
         shapeRenderer.end();
 
         batch.begin();
-        font.setColor(ThemeManager.getNumberColor());
         for (int row = 0; row < board.getGridSize(); row++) {
             for (int col = 0; col < board.getGridSize(); col++) {
                 int value = board.getValue(row, col);
                 if (value != 0) {
                     float x = board.getX() + col * cellSize + cellSize/2 - 5;
                     float y = board.getY() + row * cellSize + cellSize/2 + 5;
+
+                    if (board.isCellEditable(row, col)) {
+                        if (board.isValid(row, col, value)) {
+                            font.setColor(ThemeManager.getUserNumberColor());
+                        } else {
+                            font.setColor(ThemeManager.getErrorNumberColor());
+                        }
+                    } else {
+                        font.setColor(ThemeManager.getInitialNumberColor());
+                    }
                     font.draw(batch, String.valueOf(value), x, y);
                 }
             }
@@ -223,27 +233,6 @@ public class SudokuRenderer implements Disposable {
         batch.end();
 
         renderGridLines(board);
-    }
-
-    private void renderCell(SudokuBoard board, int row, int col, float cellSize) {
-        float x = board.getX() + col * cellSize;
-        float y = board.getY() + row * cellSize;
-
-        if (board.isSelected(row, col)) {
-            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-            shapeRenderer.setColor(ThemeManager.getSelectionColor());
-            shapeRenderer.rect(x, y, cellSize, cellSize);
-            shapeRenderer.end();
-        }
-
-        int value = board.getValue(row, col);
-        if (value != 0) {
-            batch.begin();
-            font.setColor(ThemeManager.getNumberColor());
-            font.draw(batch, String.valueOf(value),
-                x + cellSize/2 - 5, y + cellSize/2 + 5);
-            batch.end();
-        }
     }
 
     private void renderGridLines(SudokuBoard board) {
