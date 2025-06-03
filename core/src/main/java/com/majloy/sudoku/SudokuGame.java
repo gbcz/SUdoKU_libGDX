@@ -13,23 +13,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class SudokuGame extends Game {
     private SpriteBatch batch;
     public OrthographicCamera camera;
-    public FitViewport viewport;
-    public FontManager fontManager;
+
     public Skin skin;
     public DatabaseHelper dbHelper;
-    public SettingsManager settingsManager;
-    public SocialManager socialManager;
     public SavedGameState savedGame;
     public User currentUser;
     public AchievementSystem achievementSystem;
     private SudokuRenderer renderer;
-
-    //Константы масштабирования
     public static final float WORLD_SCALE = 50f;
-    public static final float WORLD_WIDTH = 13 * WORLD_SCALE;
-    public static final float WORLD_HEIGHT = 13 * WORLD_SCALE;
-    public static final float BOARD_OFFSET_X = 2f * WORLD_SCALE;
-    public static final float BOARD_OFFSET_Y = 2f * WORLD_SCALE;
 
     @Override
     public void create() {

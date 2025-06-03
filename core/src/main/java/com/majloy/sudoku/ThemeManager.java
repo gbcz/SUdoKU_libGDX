@@ -54,12 +54,12 @@ public class ThemeManager {
         return themes.get(currentTheme).blockLineColor;
     }
 
-    public static Color getNumberColor() {
-        return themes.get(currentTheme).numberColor;
+    public static Color getSelectionColor() {
+        return new Color(0.7f, 0.7f, 1f, 0.5f);
     }
 
-    public static Color getSelectionColor() {
-        return themes.get(currentTheme).selectionColor;
+    public static Color getNumberColor() {
+        return Color.BLACK;
     }
 
     public static Color getPanelColor() {

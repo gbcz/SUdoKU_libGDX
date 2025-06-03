@@ -225,6 +225,27 @@ public class SudokuRenderer implements Disposable {
         renderGridLines(board);
     }
 
+    private void renderCell(SudokuBoard board, int row, int col, float cellSize) {
+        float x = board.getX() + col * cellSize;
+        float y = board.getY() + row * cellSize;
+
+        if (board.isSelected(row, col)) {
+            shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+            shapeRenderer.setColor(ThemeManager.getSelectionColor());
+            shapeRenderer.rect(x, y, cellSize, cellSize);
+            shapeRenderer.end();
+        }
+
+        int value = board.getValue(row, col);
+        if (value != 0) {
+            batch.begin();
+            font.setColor(ThemeManager.getNumberColor());
+            font.draw(batch, String.valueOf(value),
+                x + cellSize/2 - 5, y + cellSize/2 + 5);
+            batch.end();
+        }
+    }
+
     private void renderGridLines(SudokuBoard board) {
         float x = board.getX();
         float y = board.getY();

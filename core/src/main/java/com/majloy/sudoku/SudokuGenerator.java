@@ -231,40 +231,6 @@ public class SudokuGenerator {
         return true;
     }
 
-    private static void removeNumbers(int[][] grid, int cellsToRemove, int blockSize) {
-        int count = cellsToRemove;
-        int attempts = 0;
-        int maxAttempts = 1000;
-
-        while (count > 0 && attempts < maxAttempts) {
-            int row = random.nextInt(grid.length);
-            int col = random.nextInt(grid.length);
-
-            if (grid[row][col] != 0) {
-                int temp = grid[row][col];
-                grid[row][col] = 0;
-
-                int[][] tempGrid = copyGrid(grid);
-                if (countSolutions(tempGrid, blockSize) == 1) {
-                    count--;
-                } else {
-                    grid[row][col] = temp;
-                }
-            }
-            attempts++;
-        }
-
-        if (count > 0) {
-            System.out.println("Warning: Only removed " + (cellsToRemove - count) +
-                " cells out of " + cellsToRemove);
-        }
-    }
-
-    public static boolean hasUniqueSolution(int[][] grid, int blockSize) {
-        int[][] tempGrid = copyGrid(grid);
-        return countSolutions(tempGrid, blockSize) == 1;
-    }
-
     private static int countSolutions(int[][] grid, int blockSize) {
         for (int row = 0; row < grid.length; row++) {
             for (int col = 0; col < grid.length; col++) {

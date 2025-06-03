@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Preferences;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -31,6 +32,8 @@ public class GameScreen implements Screen {
 
     public GameScreen(SudokuGame game, int gridSize, int cellsToRemove, User user, int[][] grid) {
         this.game = game;
+        game.camera = new OrthographicCamera();
+        game.camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         this.board = new SudokuBoard(game.camera, SudokuGame.WORLD_SCALE, gridSize, cellsToRemove, grid);
 
         setupUI();
@@ -201,6 +204,7 @@ public class GameScreen implements Screen {
 
     @Override
     public void render(float delta) {
+        board.handleInput();
         game.getRenderer().render(delta);
     }
 
@@ -222,27 +226,10 @@ public class GameScreen implements Screen {
     @Override public void resume() {}
     @Override public void hide() {}
 
-    public boolean isMultiplayer() {
-        return board != null && board.isMultiplayer();
-    }
-
-    public String getOpponentName() {
-        return board != null ? board.getOpponentName() : "";
-    }
-
-    public int getOpponentProgress() {
-        return board != null ? board.getOpponentProgress() : 0;
-    }
-
-    public SudokuBoard getBoard() {
-        return board;
-    }
-
-    public int getHintsLeft() {
-        return hintsLeft;
-    }
-
-    public void setHintsLeft(int hintsLeft) {
-        this.hintsLeft = hintsLeft;
-    }
+    public boolean isMultiplayer() {return board != null && board.isMultiplayer();}
+    public String getOpponentName() {return board != null ? board.getOpponentName() : "";}
+    public int getOpponentProgress() {return board != null ? board.getOpponentProgress() : 0;}
+    public SudokuBoard getBoard() {return board;}
+    public int getHintsLeft() {return hintsLeft;}
+    public void setHintsLeft(int hintsLeft) {this.hintsLeft = hintsLeft;}
 }

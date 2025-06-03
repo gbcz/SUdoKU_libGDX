@@ -1,8 +1,8 @@
 package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector3;
 
 public class SudokuBoard {
@@ -12,18 +12,13 @@ public class SudokuBoard {
     float boardY;
     float cellSize;
     private final OrthographicCamera camera;
-    private float selectionTimer = 0;
-    private boolean increasing = true;
-    private boolean isMultiplayer;
     private String opponentName;
     private int opponentProgress;
     int selectedRow = -1;
     int selectedCol = -1;
     private final int[] availableNumbers;
-    private int selectedNumber = 0;
     private float numberSelectorY;
     private float x, y;
-    private static final float NUMBER_PANEL_HEIGHT = 1.8f;
     private final int blockSize;
     private boolean multiplayer = false;
     public void updatePosition() {
@@ -32,10 +27,6 @@ public class SudokuBoard {
         this.y = (Gdx.graphics.getHeight() - totalSize) / 2;
     }
 
-    public void setCellSize(float cellSize) {
-        this.cellSize = cellSize;
-        updatePosition();
-    }
     public int getBlockSize() { switch (gridSize) {
         case 4:
             return 2;
@@ -50,10 +41,6 @@ public class SudokuBoard {
 
     public boolean isSelected(int row, int col) {
         return selectedRow == row && selectedCol == col;
-    }
-
-    public void setMultiplayer(boolean multiplayer) {
-        this.multiplayer = multiplayer;
     }
 
     public SudokuBoard(OrthographicCamera camera, float worldScale, int gridSize, int cellsToRemove, int[][] savedGrid) {
@@ -72,8 +59,6 @@ public class SudokuBoard {
 
         this.grid = (savedGrid != null) ? savedGrid :
             SudokuGenerator.generateValidPuzzle(gridSize, cellsToRemove);
-
-        handleInput();
     }
 
     private float calculateCellSize(float worldScale) {
@@ -97,12 +82,6 @@ public class SudokuBoard {
 
     public void updateSize() {
         centerBoard();
-    }
-
-
-    public void setPosition(float x, float y) {
-        this.x = x;
-        this.y = y;
     }
 
     public boolean isValidMove(int row, int col, int num) {
@@ -147,40 +126,24 @@ public class SudokuBoard {
     }
 
     public void handleInput() {
-        if (Gdx.input.justTouched()) {
-            Vector3 touchPos = new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
+        for (int i = 0; i < 2; i++) {
+            if (Gdx.input.isTouched(i)) {
+                Vector3 touchPos = new Vector3(Gdx.input.getX(i), Gdx.input.getY(i), 0);
+                camera.unproject(touchPos);
 
-            if (touchPos.x < boardX || touchPos.y < boardY ||
-                touchPos.x > boardX + gridSize * cellSize ||
-                touchPos.y > boardY + gridSize * cellSize) {
-                return;
-            }
+                if (touchPos.x >= boardX && touchPos.x <= boardX + getSize() &&
+                    touchPos.y >= boardY && touchPos.y <= boardY + getSize()) {
 
-            if (touchPos.x >= boardX && touchPos.x < boardX + gridSize * cellSize &&
-                touchPos.y >= numberSelectorY && touchPos.y < numberSelectorY + cellSize * NUMBER_PANEL_HEIGHT) {
+                    selectedCol = (int) ((touchPos.x - boardX) / cellSize);
+                    selectedRow = (int) ((touchPos.y - boardY) / cellSize);
 
-                int numberIndex = (int)((touchPos.x - boardX) / ((gridSize * cellSize) / gridSize));
-                if (numberIndex >= 0 && numberIndex < availableNumbers.length) {
-                    selectedNumber = availableNumbers[numberIndex];
-                }
-                return;
-            }
-
-            if (touchPos.x >= boardX && touchPos.x < boardX + gridSize * cellSize &&
-                touchPos.y >= boardY && touchPos.y < boardY + gridSize * cellSize) {
-
-                selectedCol = (int)((touchPos.x - boardX) / cellSize);
-                selectedRow = (int)((touchPos.y - boardY) / cellSize);
-
-                if (selectedNumber != 0 && grid[selectedRow][selectedCol] == 0) {
-                    if (isValidMove(selectedRow, selectedCol, selectedNumber)) {
-                        grid[selectedRow][selectedCol] = selectedNumber;
-                    }
+                    selectedCol = MathUtils.clamp(selectedCol, 0, gridSize - 1);
+                    selectedRow = MathUtils.clamp(selectedRow, 0, gridSize - 1);
                 }
             }
         }
     }
+
 
     public int getGridSize() { return gridSize; }
     public float getX() { return boardX; }
@@ -190,16 +153,7 @@ public class SudokuBoard {
     public int[][] getGrid() { return grid; }
     public int getValue(int row, int col) { return grid[row][col]; }
     public boolean hasSelectedCell() { return selectedRow != -1 && selectedCol != -1; }
-    public int getSelectedRow() { return selectedRow; }
-    public int getSelectedCol() { return selectedCol; }
     public boolean isMultiplayer() { return multiplayer; }
-    public void setGrid(int[][] grid) {this.grid = grid;}
-    public int getCellValue(int row, int col) {
-        if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
-            throw new IllegalArgumentException("Invalid cell coordinates");
-        }
-        return grid[row][col];
-    }
     public void setCellValue(int row, int col, int value) {
         if (row < 0 || row >= gridSize || col < 0 || col >= gridSize) {
             throw new IllegalArgumentException("Invalid cell coordinates");
@@ -241,16 +195,6 @@ public class SudokuBoard {
         }
         return count;
     }
-    private int countEmptyCells() {
-        int count = 0;
-        for (int[] row : grid) {
-            for (int cell : row) {
-                if (cell == 0) count++;
-            }
-        }
-        return count;
-    }
-    public void setOpponentName(String opponentName) {this.opponentName = opponentName;}
     public int getOpponentProgress() {return opponentProgress;}
     public String getOpponentName() {return opponentName;}
     public void dispose() {}
@@ -263,27 +207,5 @@ public class SudokuBoard {
             }
         }
         return true;
-    }
-    public void setMultiplayerMode(String opponentName) {
-        this.isMultiplayer = true;
-        this.opponentName = opponentName;
-        this.opponentProgress = 0;
-    }
-    public void updateOpponentProgress(int progress) {this.opponentProgress = progress;}
-
-    public float getSelectionTimer() {
-        return selectionTimer;
-    }
-
-    public void setSelectionTimer(float selectionTimer) {
-        this.selectionTimer = selectionTimer;
-    }
-
-    public boolean isIncreasing() {
-        return increasing;
-    }
-
-    public void setIncreasing(boolean increasing) {
-        this.increasing = increasing;
     }
 }
