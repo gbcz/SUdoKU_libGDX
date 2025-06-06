@@ -2,7 +2,6 @@ package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -250,8 +249,8 @@ public class SudokuRenderer implements Disposable {
         shapeRenderer.setColor(ThemeManager.getLineColor());
 
         for (int i = 0; i <= board.getGridSize(); i++) {
-            shapeRenderer.line(x, y + i * cellSize, x + size, y + i * cellSize); // горизонтальные
-            shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size); // вертикальные
+            shapeRenderer.line(x, y + i * cellSize, x + size, y + i * cellSize);
+            shapeRenderer.line(x + i * cellSize, y, x + i * cellSize, y + size);
         }
         shapeRenderer.end();
 
@@ -263,8 +262,8 @@ public class SudokuRenderer implements Disposable {
         int blocks = board.getGridSize() / blockSize;
         for (int i = 0; i <= blocks; i++) {
             float pos = i * blockSize * cellSize;
-            shapeRenderer.line(x, y + pos, x + size, y + pos); // горизонтальные
-            shapeRenderer.line(x + pos, y, x + pos, y + size); // вертикальные
+            shapeRenderer.line(x, y + pos, x + size, y + pos);
+            shapeRenderer.line(x + pos, y, x + pos, y + size);
         }
         shapeRenderer.end();
 
