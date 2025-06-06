@@ -3,6 +3,8 @@ package com.majloy.sudoku;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
@@ -19,7 +21,7 @@ public class MainMenuScreen implements Screen {
     private Stage stage;
     private User currentUser;
     private Label userInfoLabel;
-    private MainMenuScreen mainMenu;
+    private final MainMenuScreen mainMenu;
 
     public MainMenuScreen(SudokuGame game) {
         this.game = game;
@@ -38,9 +40,7 @@ public class MainMenuScreen implements Screen {
 
         Table header = createHeader();
         Table menuButtons = createMenuButtons();
-
-        Label footer = new Label("© 2025 Sudoku Game", game.skin, "default");
-        footer.setColor(Color.GRAY);
+        Table footer = createFooter();
 
         userInfoLabel = new Label(currentUser != null ?
             "Welcome, " + currentUser.getUsername() + " (Level " + currentUser.getLevel() + ")" :
@@ -54,6 +54,27 @@ public class MainMenuScreen implements Screen {
         stage.addActor(mainTable);
     }
 
+    private Table createFooter() {
+        Table footer = new Table();
+
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/Roboto-Regular.ttf"));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.characters = "©";
+        BitmapFont copyrightFont = generator.generateFont(parameter);
+        generator.dispose();
+
+        Label.LabelStyle copyrightStyle = new Label.LabelStyle(copyrightFont, Color.GRAY);
+
+        Label copyright = new Label("©", copyrightStyle);
+        copyright.setColor(Color.GRAY);
+        Label copyrightText = new Label("2025 Sudoku Game, Romanov Roman", game.skin, "default");
+        copyrightText.setColor(Color.GRAY);
+
+        footer.add(copyright);
+        footer.add(copyrightText);
+
+        return footer;
+    }
     private Table createHeader() {
         Table header = new Table();
         header.setBackground(game.skin.getDrawable("default-pane"));

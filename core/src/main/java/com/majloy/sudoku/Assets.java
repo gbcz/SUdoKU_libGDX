@@ -6,16 +6,13 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class Assets {
     public static TextureRegion whitePixel;
     public static BitmapFont font;
     public static TextureRegion[] numberTiles;
     public static Texture backgroundTexture;
-
-    public static Color LINE_COLOR = new Color(0.2f, 0.2f, 0.2f, 1);
-    public static Color BLOCK_LINE_COLOR = new Color(0.1f, 0.1f, 0.1f, 1f);
-    public static Color SELECTED_NUMBER_COLOR = new Color(0.9f, 0.9f, 0.2f, 0.7f);
 
     public static void load() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);

@@ -19,7 +19,7 @@ public class SudokuGenerator {
                 int blockSize = getBlockSize(gridSize);
 
                 if (gridSize == 16) {
-                    return generate12x12Puzzle(cellsToRemove);
+                    return generate16x16Puzzle(cellsToRemove);
                 }
 
                 fillDiagonalBlocks(grid, blockSize);
@@ -55,14 +55,14 @@ public class SudokuGenerator {
         }
     }
 
-    private static int[][] generate12x12Puzzle(int cellsToRemove) {
+    private static int[][] generate16x16Puzzle(int cellsToRemove) {
         int[][] grid = new int[16][16];
         int blockRows = 4;
         int blockCols = 4;
 
         for (int boxRow = 0; boxRow < 4; boxRow++) {
             for (int boxCol = 0; boxCol < 4; boxCol++) {
-                fill12x12Block(grid, boxRow * blockRows, boxCol * blockCols);
+                fill16x16Block(grid, boxRow * blockRows, boxCol * blockCols);
             }
         }
 
@@ -71,7 +71,7 @@ public class SudokuGenerator {
         return grid;
     }
 
-    private static void fill12x12Block(int[][] grid, int startRow, int startCol) {
+    private static void fill16x16Block(int[][] grid, int startRow, int startCol) {
         List<Integer> numbers = new ArrayList<>();
         for (int i = 1; i <= 16; i++) numbers.add(i);
         Collections.shuffle(numbers);

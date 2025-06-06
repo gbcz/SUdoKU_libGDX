@@ -8,12 +8,10 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class SudokuGame extends Game {
     private SpriteBatch batch;
     public OrthographicCamera camera;
-
     public Skin skin;
     public DatabaseHelper dbHelper;
     public SavedGameState savedGame;
@@ -29,6 +27,7 @@ public class SudokuGame extends Game {
         font = new BitmapFont();
         skin = new Skin(Gdx.files.internal("uiskin.json"));
         renderer = new SudokuRenderer(skin, font);
+        dbHelper = new DatabaseHelper();
 
         setScreen(new MainMenuScreen(this));
     }
@@ -55,7 +54,6 @@ public class SudokuGame extends Game {
     public SudokuRenderer getRenderer() {
         return renderer;
     }
-
     public static class SavedGameState {
         public int gridSize;
         public int cellsToRemove;

@@ -23,7 +23,6 @@ public class GamePreferences {
         return instance;
     }
 
-    // User related methods
     public void saveUserData(User user) {
         prefs.putInteger("user_" + user.getId() + "_level", user.getLevel());
         prefs.putInteger("user_" + user.getId() + "_games_played", user.getGamesPlayed());
@@ -33,7 +32,6 @@ public class GamePreferences {
         prefs.putBoolean("user_" + user.getId() + "_premium", user.isPremiumUser());
         prefs.putInteger("user_" + user.getId() + "_daily_streak", user.getDailyStreak());
 
-        // Save achievements
         Set<String> achievements = user.getUnlockedAchievements();
         prefs.putInteger("user_" + user.getId() + "_achievements_count", achievements.size());
         int i = 0;
@@ -55,7 +53,6 @@ public class GamePreferences {
         user.setPremiumStatus(prefs.getBoolean("user_" + userId + "_premium", false));
         user.setDailyStreak(prefs.getInteger("user_" + userId + "_daily_streak", 0));
 
-        // Load achievements
         int achievementsCount = prefs.getInteger("user_" + userId + "_achievements_count", 0);
         Set<String> achievements = new HashSet<>();
         for (int i = 0; i < achievementsCount; i++) {
@@ -69,27 +66,24 @@ public class GamePreferences {
         return user;
     }
 
-    // Game state methods
-    public void saveGameState(SavedGameState gameState, User user) {
+    public void saveGameState(SudokuGame.SavedGameState gameState, User user) {
         prefs.putBoolean("has_save", true);
         prefs.putInteger("save_grid_size", gameState.gridSize);
         prefs.putInteger("save_cells_to_remove", gameState.cellsToRemove);
 
-        // Save grid
         for (int row = 0; row < gameState.gridSize; row++) {
             for (int col = 0; col < gameState.gridSize; col++) {
                 prefs.putInteger("save_grid_" + row + "_" + col, gameState.grid[row][col]);
             }
         }
 
-        // Save metadata
         prefs.putLong("save_timestamp", new Date().getTime());
         prefs.putInteger("save_user_id", user.getId());
 
         prefs.flush();
     }
 
-    public SavedGameState loadGameState() {
+    public SudokuGame.SavedGameState loadGameState() {
         if (!prefs.getBoolean("has_save", false)) {
             return null;
         }
@@ -104,21 +98,19 @@ public class GamePreferences {
             }
         }
 
-        return new SavedGameState(gridSize, cellsToRemove, grid);
+        return new  SudokuGame.SavedGameState(gridSize, cellsToRemove, grid);
     }
 
     public void clearSavedGame() {
         if (prefs.getBoolean("has_save", false)) {
             int gridSize = prefs.getInteger("save_grid_size");
 
-            // Remove grid data
             for (int row = 0; row < gridSize; row++) {
                 for (int col = 0; col < gridSize; col++) {
                     prefs.remove("save_grid_" + row + "_" + col);
                 }
             }
 
-            // Remove other data
             prefs.remove("has_save");
             prefs.remove("save_grid_size");
             prefs.remove("save_cells_to_remove");
@@ -129,7 +121,6 @@ public class GamePreferences {
         }
     }
 
-    // Settings methods
     public void saveSettings(boolean soundEnabled, String theme, String colorScheme) {
         prefs.putBoolean("sound_enabled", soundEnabled);
         prefs.putString("theme", theme);
@@ -149,7 +140,6 @@ public class GamePreferences {
         return prefs.getString("color_scheme", "default");
     }
 
-    // Challenge methods
     public void saveChallenge(Challenge challenge) {
         int nextId = prefs.getInteger("challenges_next_id", 1);
 
@@ -163,7 +153,6 @@ public class GamePreferences {
         prefs.flush();
     }
 
-    // Other utility methods
     public void clearAllData() {
         prefs.clear();
         prefs.flush();
@@ -176,7 +165,6 @@ public class GamePreferences {
         private int difficulty;
         private Date created;
 
-        // Getters and setters
         public int getFromUserId() { return fromUserId; }
         public void setFromUserId(int fromUserId) { this.fromUserId = fromUserId; }
         public int getToUserId() { return toUserId; }

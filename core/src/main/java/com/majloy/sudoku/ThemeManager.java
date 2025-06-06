@@ -47,7 +47,7 @@ public class ThemeManager {
     }
 
     public static Color getUserNumberColor() {
-        return new Color(0.1f, 0.5f, 0.8f, 1);
+        return new Color(0, 0.5f, 0, 1);
     }
 
     public static Color getErrorNumberColor() {

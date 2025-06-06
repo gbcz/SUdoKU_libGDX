@@ -15,7 +15,6 @@ public class SocialManager {
         challenge.setGridSize(gridSize);
         challenge.setDifficulty(difficulty);
         challenge.setCreated(new Date());
-        // Сохраняем вызов в базе данных
         dbHelper.saveChallenge(challenge);
     }
 
@@ -24,7 +23,7 @@ public class SocialManager {
     }
 
     public void shareResult(int userId, String socialNetwork, int score) {
-        // Логика публикации результата в соцсети
+        //Логика публикации результата в соцсети
     }
 
     public static class Challenge {
