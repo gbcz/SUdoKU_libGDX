@@ -90,6 +90,16 @@ public class MainMenuScreen implements Screen {
             level.setText("Level: " + currentUser.getLevel());
         }
 
+        TextButton leaderBoardBtn = new TextButton("Leaderboard", game.skin, "default");
+        leaderBoardBtn.addListener(new ClickListener() {
+           @Override
+           public void clicked(InputEvent event, float x, float y) {
+               game.setScreen(new LeaderboardScreen(game, currentUser));
+               dispose();
+           }
+        });
+
+        header.add(leaderBoardBtn).width(100).height(20).pad(10,20,10,10);
         header.add(avatar).pad(10, 20, 10, 10);
         header.add(username).padRight(10);
         header.add(level);

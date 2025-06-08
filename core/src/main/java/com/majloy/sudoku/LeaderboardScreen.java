@@ -2,6 +2,7 @@ package com.majloy.sudoku;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -10,12 +11,12 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class StatisticsScreen implements Screen {
+public class LeaderboardScreen implements Screen {
     private final SudokuGame game;
     private final User user;
     private Stage stage;
 
-    public StatisticsScreen(SudokuGame game, User user) {
+    public LeaderboardScreen(SudokuGame game, User user) {
         this.game = game;
         this.user = user != null ? user : createGuestUser();
         setupUI();
@@ -34,24 +35,26 @@ public class StatisticsScreen implements Screen {
         Table table = new Table();
         table.setFillParent(true);
 
-        Label title = new Label("Statistics", game.skin, "default");
-        table.add(title).padBottom(50).row();
+        Label leaderboard = new Label("Leaderboard", game.skin, "default");
+        leaderboard.setColor(Color.ORANGE);
+        Label person1 = new Label("RomanT, Score: 100", game.skin, "default");
+        person1.setColor(Color.GRAY);
+        Label person2 = new Label("RomanTe, Score: 53", game.skin, "default");
+        person2.setColor(Color.GRAY);
+        Label person3 = new Label("RomanTes, Score: 36", game.skin, "default");
+        person3.setColor(Color.GRAY);
+        Label person4 = new Label("RomanTest, Score: 10", game.skin, "default");
+        person4.setColor(Color.GRAY);
+        Label person5 = new Label("Roman, Score: 0", game.skin, "default");
+        person5.setColor(Color.RED);
 
-        table.add(new Label("Games Played:", game.skin)).padBottom(10).row();
-        table.add(new Label(String.valueOf(user != null ? user.getGamesPlayed() : 0), game.skin)).padBottom(20).row();
-
-        table.add(new Label("Games Won:", game.skin)).padBottom(10).row();
-        table.add(new Label(String.valueOf(user != null ? user.getGamesWon() : 0), game.skin)).padBottom(20).row();
-
-        table.add(new Label("Current Level:", game.skin)).padBottom(10).row();
-        table.add(new Label(String.valueOf(user != null ? user.getLevel() : 1), game.skin)).padBottom(20).row();
-
-        Table achievement = new Table();
-        achievement.add(new Label("Achievement", game.skin)).padBottom(10).row();
-        achievement.add(new Label("First WIN", game.skin)).padBottom(20).row();
-
-        table.add(achievement).row();
-
+        table.add(leaderboard).padBottom(20).row();
+        table.add(person1).padBottom(10).row();
+        table.add(person2).padBottom(10).row();
+        table.add(person3).padBottom(10).row();
+        table.add(person4).padBottom(10).row();
+        table.add(person5).padBottom(10).row();
+        
         TextButton backBtn = new TextButton("Back", game.skin);
         backBtn.addListener(new ClickListener() {
             @Override

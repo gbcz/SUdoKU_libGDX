@@ -56,6 +56,8 @@ public class SudokuRenderer implements Disposable {
                 renderStatisticsScreen((StatisticsScreen) currentScreen, delta);
             } else if (currentScreen instanceof SettingScreen) {
                 renderSettingsScreen((SettingScreen) currentScreen, delta);
+            } else if (currentScreen instanceof LeaderboardScreen) {
+                renderLeaderboardScreen((LeaderboardScreen) currentScreen, delta);
             }
         }
 
@@ -161,6 +163,18 @@ public class SudokuRenderer implements Disposable {
     }
 
     private void renderStatisticsScreen(StatisticsScreen screen, float delta) {
+        batch.begin();
+        batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
+        font.setColor(ThemeManager.getTitleColor());
+        font.getData().setScale(2f);
+        font.draw(batch, "SSSSSudoku", (float) Gdx.graphics.getWidth() /2 - 100, Gdx.graphics.getHeight() - 100);
+        font.getData().setScale(1f);
+
+        batch.end();
+    }
+
+    private void renderLeaderboardScreen(LeaderboardScreen screen, float delta) {
         batch.begin();
         batch.draw(Assets.backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
